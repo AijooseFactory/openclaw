@@ -362,8 +362,9 @@ export async function runGreetingPromptForBareNewOrReset(params: {
   expect(text).toBe("hello");
   expect(runEmbeddedPiAgentMock).toHaveBeenCalledOnce();
   const prompt = runEmbeddedPiAgentMock.mock.calls.at(-1)?.[0]?.prompt ?? "";
-  expect(prompt).toContain("A new session was started via /new or /reset");
-  expect(prompt).toContain("Run your Session Startup sequence");
+  // Startup message disabled by default - no greeting on new sessions
+  expect(prompt).not.toContain("A new session was started via /new or /reset");
+  expect(prompt).not.toContain("Run your Session Startup sequence");
 }
 
 export function installTriggerHandlingE2eTestHooks() {
