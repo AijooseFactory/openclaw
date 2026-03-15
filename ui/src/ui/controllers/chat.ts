@@ -166,6 +166,17 @@ export async function sendChatMessage(
 
   const now = Date.now();
 
+  // Clear chat when starting a new session with /new or /reset
+  const trimmedMsg = msg.trim().toLowerCase();
+  if (
+    trimmedMsg === "/new" ||
+    trimmedMsg === "/reset" ||
+    trimmedMsg.startsWith("/new ") ||
+    trimmedMsg.startsWith("/reset ")
+  ) {
+    state.chatMessages = [];
+  }
+
   // Build user message content blocks
   const contentBlocks: Array<{ type: string; text?: string; source?: unknown }> = [];
   if (msg) {
