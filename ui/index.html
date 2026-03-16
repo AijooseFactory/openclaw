@@ -8,9 +8,123 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  </head>
+    <script>
+      (function() {
+        const noop = () => {};
+        const pathShim = {
+          resolve: (...args) => args.filter(Boolean).join('/').replace(/\/+/g, '/'),
+          join: (...args) => args.filter(Boolean).join('/').replace(/\/+/g, '/'),
+          dirname: (p) => p.split('/').slice(0, -1).join('/') || '.',
+          basename: (p) => p.split('/').pop() || '',
+          extname: (p) => {
+            const base = p.split('/').pop() || '';
+            const dotIndex = base.lastIndexOf('.');
+            return dotIndex === -1 ? '' : base.slice(dotIndex);
+          },
+          relative: (from, to) => to,
+          isAbsolute: (p) => p.startsWith('/'),
+          sep: '/',
+          delimiter: ':',
+          existsSync: () => true,
+          lstatSync: () => ({ isSymbolicLink: () => false, isDirectory: () => true, mode: 0o777, uid: 0 }),
+          statSync: () => ({ size: 0, isDirectory: () => true }),
+          realpathSync: (p) => p,
+          readlinkSync: (p) => p,
+          mkdirSync: noop,
+          accessSync: noop,
+          chmodSync: noop,
+        };
+        pathShim.default = pathShim;
+
+        const processShim = {
+          env: { NODE_ENV: 'production' },
+          platform: 'browser',
+          nextTick: (cb) => setTimeout(cb, 0),
+          getuid: () => 0,
+          cwd: () => '/',
+          umask: () => 0,
+          on: noop,
+          emit: noop,
+          browser: true,
+          stdout: { isTTY: false, write: noop },
+          stderr: { isTTY: false, write: noop },
+          argv: [],
+        };
+        processShim.default = processShim;
+
+        const osShim = {
+          homedir: () => '/',
+          tmpdir: () => '/tmp',
+          platform: () => 'browser',
+          release: () => '1.0.0',
+          type: () => 'Browser',
+          endianness: () => 'LE',
+        };
+        osShim.default = osShim;
+
+        const proxyHandler = {
+          get: function(target, prop) {
+            if (prop === 'default') return target;
+            if (prop === '__esModule') return true;
+            if (prop in target) return target[prop];
+            if (typeof prop === 'string' && (prop.startsWith('is') || prop.endsWith('Sync'))) return noop;
+            return undefined;
+          }
+        };
+
+        const pProxy = new Proxy(processShim, proxyHandler);
+        const pathProxy = new Proxy(pathShim, proxyHandler);
+        const osProxy = new Proxy(osShim, proxyHandler);
+
+        window.process = pProxy;
+        window.path = pathProxy;
+        window.os = osProxy;
+
+        const xValue = {
+          __esModule: true,
+          default: pathProxy,
+          resolve: pathProxy.resolve,
+          join: pathProxy.join
+        };
+
+        window.X = xValue;
+        window.node_path = pathProxy;
+        window.node_process = pProxy;
+        window.node_os = osProxy;
+      })();
+    </script>
+    </head>
+
   <body>
     <openclaw-app></openclaw-app>
+    <script>
+      (function() {
+        const token = '0e7f291807301da5357968349d1b6fd9f2ea048390f6e04e';
+        const gatewayUrl = 'ws://localhost:3000';
+        const storageKey = 'openclaw.control.token.v1:' + gatewayUrl;
+        
+        let needsReload = false;
+        if (!sessionStorage.getItem(storageKey)) {
+          sessionStorage.setItem(storageKey, token);
+          needsReload = true;
+        }
+        
+        const settingsKey = 'openclaw.control.settings.v1';
+        if (!localStorage.getItem(settingsKey)) {
+          localStorage.setItem(settingsKey, JSON.stringify({
+            gatewayUrl: gatewayUrl,
+            theme: 'claw',
+            themeMode: 'system'
+          }));
+          needsReload = true;
+        }
+
+        if (needsReload) {
+          console.log('[OpenClaw] Autologin bootstrap complete. Reloading...');
+          location.reload();
+        }
+      })();
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -1,0 +1,15 @@
+const noop = () => {};
+export const env = { NODE_ENV: 'production' };
+export const platform = 'browser';
+export const nextTick = (cb) => setTimeout(cb, 0);
+export const getuid = () => 0;
+export const cwd = () => '/';
+export const umask = () => 0;
+export const on = noop;
+export const emit = noop;
+export const browser = true;
+export const stdout = { isTTY: false, write: noop };
+export const stderr = { isTTY: false, write: noop };
+export const argv = [];
+const processShim = { env, platform, nextTick, getuid, cwd, umask, on, emit, browser, stdout, stderr, argv };
+export default processShim;

@@ -214,7 +214,7 @@ function pathComponentsFromRootSync(targetPath: string): string[] {
 
 function isWritableByCurrentProcessSync(candidate: string): boolean {
   try {
-    fs.accessSync(candidate, fs.constants.W_OK);
+    fs.accessSync(candidate, 2);
     return true;
   } catch {
     return false;

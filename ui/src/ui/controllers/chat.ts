@@ -166,15 +166,20 @@ export async function sendChatMessage(
 
   const now = Date.now();
 
-  // Clear chat when starting a new session with /new or /reset
+  // Clear chat when starting a new session with /new, /reset, or /clear
   const trimmedMsg = msg.trim().toLowerCase();
   if (
     trimmedMsg === "/new" ||
     trimmedMsg === "/reset" ||
+    trimmedMsg === "/clear" ||
     trimmedMsg.startsWith("/new ") ||
-    trimmedMsg.startsWith("/reset ")
+    trimmedMsg.startsWith("/reset ") ||
+    trimmedMsg.startsWith("/clear ")
   ) {
     state.chatMessages = [];
+    if (trimmedMsg === "/clear" || trimmedMsg.startsWith("/clear ")) {
+      return null; // Don't send /clear to the gateway, just clear UI
+    }
   }
 
   // Build user message content blocks

@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 
 export const POSIX_OPENCLAW_TMP_DIR = "/tmp/openclaw";
-const TMP_DIR_ACCESS_MODE = fs.constants.W_OK | fs.constants.X_OK;
+const TMP_DIR_ACCESS_MODE = 2 | 1; // W_OK (2) | X_OK (1)
 
 type ResolvePreferredOpenClawTmpDirOptions = {
   accessSync?: (path: string, mode?: number) => void;
@@ -34,6 +34,9 @@ function isNodeErrorWithCode(err: unknown, code: string): err is MaybeNodeError 
 export function resolvePreferredOpenClawTmpDir(
   options: ResolvePreferredOpenClawTmpDirOptions = {},
 ): string {
+  if (typeof process !== "undefined" && (process as any).browser) {
+    return POSIX_OPENCLAW_TMP_DIR;
+  }
   const accessSync = options.accessSync ?? fs.accessSync;
   const chmodSync = options.chmodSync ?? fs.chmodSync;
   const lstatSync = options.lstatSync ?? fs.lstatSync;

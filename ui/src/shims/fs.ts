@@ -1,0 +1,13 @@
+const noop = () => {};
+export const existsSync = () => true;
+export const lstatSync = () => ({ isSymbolicLink: () => false, isDirectory: () => true, mode: 0o777, uid: 0 });
+export const statSync = () => ({ size: 0, isDirectory: () => true });
+export const realpathSync = (p) => p;
+export const readlinkSync = (p) => p;
+export const mkdirSync = noop;
+export const accessSync = noop;
+export const chmodSync = noop;
+export const readFileSync = () => '';
+export const constants = { W_OK: 2, X_OK: 1, R_OK: 4, O_RDONLY: 0 };
+const fs = { existsSync, lstatSync, statSync, realpathSync, readlinkSync, mkdirSync, accessSync, chmodSync, readFileSync, constants };
+export default fs;

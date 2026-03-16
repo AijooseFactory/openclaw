@@ -45,7 +45,7 @@ function existsFile(filePath: string): boolean {
 
 function canWriteDir(dir: string): boolean {
   try {
-    fs.accessSync(dir, fs.constants.W_OK);
+    fs.accessSync(dir, 2);
     return true;
   } catch {
     return false;

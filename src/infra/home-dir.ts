@@ -53,7 +53,8 @@ export function resolveRequiredHomeDir(
   env: NodeJS.ProcessEnv = process.env,
   homedir: () => string = os.homedir,
 ): string {
-  return resolveEffectiveHomeDir(env, homedir) ?? path.resolve(process.cwd());
+  const cwd = typeof process !== "undefined" && typeof process.cwd === "function" ? process.cwd() : "/";
+  return resolveEffectiveHomeDir(env, homedir) ?? path.resolve(cwd);
 }
 
 export function expandHomePrefix(
