@@ -223,6 +223,31 @@ Every skill creation should:
 - **unsupported_request**: Suggest appropriate skill to handoff
 - **safety_block**: Explain violation, provide safe alternative
 
+## Minimum Observability
+
+**This is a Core Required section.** Every skill must define minimum observability requirements.
+
+### Required Logging
+
+Every skill must log the following:
+
+| Event | Description |
+|-------|-------------|
+| **Trigger** | When the skill is activated (initialization) |
+| **Action** | The primary action taken by the skill |
+| **Failure** | Any error or failure condition that occurs |
+
+### Logging Format
+
+Logging format is **optional**. Skills may use:
+- Simple text logs
+- Structured JSON format
+- Framework-native logging
+
+### Relationship to Advanced Observability
+
+This minimum observability section is separate from the **Observability Expansion** (advanced section). Advanced topics like metrics, tracing, and detailed debugging belong in expanded context loading, not in core required definitions.
+
 ## Skill Anatomy
 
 Every skill consists of a required SKILL.md file and optional bundled resources:
