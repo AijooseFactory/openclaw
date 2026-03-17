@@ -1,0 +1,87 @@
+# Skill Creator Output Tests
+# Tests for validating skill-creator output
+
+required_sections:
+  - section: "Purpose"
+    required: true
+    validation: "Exists and describes skill role"
+
+  - section: "Trigger Contract"
+    required: true
+    validation: "Contains Use/Don't Use/Inspect/Handoff/Stop"
+
+  - section: "When Not to Use"
+    required: true
+    validation: "Lists misactivation scenarios"
+
+  - section: "Inputs"
+    required: true
+    validation: "Lists required and optional inputs"
+
+  - section: "Output Contract"
+    required: true
+    validation: "Defines output mode and guarantees"
+
+  - section: "Risk and Safety Boundaries"
+    required: true
+    validation: "Contains risk level and trust boundaries"
+
+  - section: "Failure Taxonomy"
+    required: true
+    validation: "Lists standard failure classes"
+
+  - section: "Minimal Context Rules"
+    required: true
+    validation: "Defines core required context"
+
+  - section: "Minimum Observability"
+    required: true
+    validation: "Lists required logging events"
+
+  - section: "Version Metadata"
+    required: true
+    validation: "Contains version info"
+
+required_frontmatter_fields:
+  - field: "version"
+    format: "semver (e.g., 1.0.0)"
+
+  - field: "skill_schema_version"
+    format: "integer (1)"
+
+  - field: "deprecated"
+    format: "boolean"
+
+  - field: "replaced_by"
+    format: "string or null"
+
+  - field: "minimum_openclaw_version"
+    format: "semver string"
+
+  - field: "supported_models"
+    format: "array (e.g., [general])"
+
+  - field: "preferred_model_traits"
+    format: "array of strings"
+
+  - field: "required_tools"
+    format: "array"
+
+  - field: "optional_tools"
+    format: "array"
+
+  - field: "risk_level"
+    format: "low|medium|high"
+
+required_directories:
+  - path: "tests/"
+    must_contain: ["test_trigger.yaml", "test_output.yaml"]
+
+  - path: "evals/baseline/"
+    must_contain: ["prompts.yaml"]
+
+  - path: "evals/scoring/"
+    must_contain: ["thresholds.yaml"]
+
+  - path: "."
+    must_contain: ["CHANGELOG.md"]

@@ -1,0 +1,59 @@
+# Skill Creator Trigger Tests
+# Tests for when skill-creator should be invoked
+
+positive_cases:
+  - trigger: "create a new skill"
+    expected: invoke
+    reason: "Direct skill creation request"
+
+  - trigger: "write a skill for"
+    expected: invoke
+    reason: "Skill authoring language"
+
+  - trigger: "design a skill that"
+    expected: invoke
+    reason: "Skill design request"
+
+  - trigger: "I need a skill to"
+    expected: invoke
+    reason: "Skill need expressed"
+
+  - trigger: "enhance the existing skill"
+    expected: invoke
+    reason: "Skill enhancement request"
+
+  - trigger: "update this skill's SKILL.md"
+    expected: invoke
+    reason: "Skill file modification"
+
+negative_cases:
+  - trigger: "write code for"
+    expected: do_not_invoke
+    reason: "Not a skill creation task"
+    alternative: "brainstorming → writing-plans → test-driven-development"
+
+  - trigger: "debug this issue"
+    expected: do_not_invoke
+    reason: "Debugging task, not skill creation"
+    alternative: "systematic-debugging"
+
+  - trigger: "review this code"
+    expected: do_not_invoke
+    reason: "Code review, not skill creation"
+    alternative: "requesting-code-review"
+
+  - trigger: "what skills do you have"
+    expected: do_not_invoke
+    reason: "Query, not skill creation"
+    alternative: "list skills directly"
+
+inspect_first_cases:
+  - trigger: "improve the documentation"
+    expected: inspect_first
+    reason: "May or may not involve skills"
+    check: "Is documentation for a skill or general docs?"
+
+  - trigger: "restructure this file"
+    expected: inspect_first
+    reason: "May be skill restructuring"
+    check: "Is file a SKILL.md?"

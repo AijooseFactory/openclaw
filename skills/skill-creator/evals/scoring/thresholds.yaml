@@ -1,0 +1,50 @@
+# Skill Creator Scoring Thresholds
+# Pass/fail criteria for skill-creator evaluation
+
+thresholds:
+  core_sections_present:
+    weight: 40
+    pass_criteria: "All 10 Core Required sections present"
+    fail_if: "Any Core Required section missing"
+
+  frontmatter_complete:
+    weight: 20
+    pass_criteria: "All 15 frontmatter fields present with valid values"
+    fail_if: "Missing required field or invalid format"
+
+  directories_created:
+    weight: 15
+    pass_criteria: "tests/, evals/baseline/, evals/scoring/, CHANGELOG.md created"
+    fail_if: "Any required directory/file missing"
+
+  content_preserved:
+    weight: 15
+    pass_criteria: "Existing content preserved when enhancing"
+    fail_if: "Original content lost during enhancement"
+
+  trigger_contract_valid:
+    weight: 10
+    pass_criteria: "Trigger Contract has Use/Don't Use/Inspect/Handoff/Stop"
+    fail_if: "Missing trigger contract section type"
+
+scoring:
+  pass_threshold: 80
+  perfect_score: 100
+  fail_below: 80
+
+grade_levels:
+  - grade: "A"
+    range: "95-100"
+    description: "Exceeds all requirements"
+
+  - grade: "B"
+    range: "80-94"
+    description: "Meets all requirements"
+
+  - grade: "C"
+    range: "60-79"
+    description: "Meets most requirements, minor gaps"
+
+  - grade: "F"
+    range: "0-59"
+    description: "Fails to meet requirements, must redo"

@@ -1,0 +1,48 @@
+# Skill Creator Baseline Evaluation Prompts
+# Standard prompts for evaluating skill-creator performance
+
+prompts:
+  - id: "basic_skill_creation"
+    prompt: |
+      Create a skill for validating YAML configuration files.
+
+      The skill should:
+      - Check required fields
+      - Validate field types
+      - Report errors clearly
+    expected_sections:
+      - Purpose
+      - Trigger Contract
+      - Inputs
+      - Output Contract
+
+  - id: "skill_enhancement"
+    prompt: |
+      Enhance the existing brainstorming skill to include AI timeline estimation guidance.
+    expected_behavior: "Preserves existing content, adds new sections appropriately"
+
+  - id: "trigger_contract_validation"
+    prompt: |
+      Create a skill for database migrations.
+    focus: "Trigger Contract"
+    expected:
+      use_cases: ["when creating migrations", "when modifying schema"]
+      dont_use_cases: ["for data queries", "for API endpoints"]
+      inspect_first: ["when unclear if migration needed"]
+
+  - id: "output_contract_validation"
+    prompt: |
+      Create a skill for API rate limiting.
+    focus: "Output Contract"
+    expected:
+      output_mode: "structured"
+      guarantees: ["predictable structure", "validation rules"]
+
+  - id: "failure_taxonomy_validation"
+    prompt: |
+      Create a skill for handling user authentication.
+    focus: "Failure Taxonomy"
+    expected_failures:
+      - "invalid_input"
+      - "missing_context"
+      - "permission_denied"
