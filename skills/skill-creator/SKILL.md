@@ -1247,7 +1247,20 @@ mcp_requirements:
     - tools
     - resources
     - prompts
-  authentication: none  # or "bearer", "api-key", etc.
+  authentication:
+    # Choose based on security needs:
+    # - none: For local/trusted environments
+    # - bearer: For token-based auth
+    # - api-key: For external service auth
+    default: none
+    supported:
+      - none
+      - bearer
+      - api-key
+    # Example bearer config:
+    # authentication:
+    #   type: bearer
+    #   token_env: MCP_AUTH_TOKEN
 ```
 
 ### When to Use MCP vs Native Tools
