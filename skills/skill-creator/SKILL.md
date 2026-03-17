@@ -1,7 +1,7 @@
 ---
 name: skill-creator
-description: Create, edit, improve, or audit AgentSkills. Use when creating a new skill from scratch or when asked to improve, review, audit, tidy up, or clean up an existing skill or SKILL.md file. Also use when editing or restructuring a skill directory (moving files to references/ or scripts/, removing stale content, validating against the AgentSkills spec). Triggers on phrases like "create a skill", "author a skill", "tidy up a skill", "improve this skill", "review the skill", "clean up the skill", "audit the skill".
-version: 2.2.0
+description: Create, audit, harden, evaluate, and govern OpenClaw AgentSkills. Produces canonical skills that are tool-safe, eval-backed, MCP-ready, context-efficient, and lifecycle-managed. Use when creating a new skill from scratch or when asked to improve, review, audit, tidy up, or clean up an existing skill or SKILL.md file. Triggers on phrases like "create a skill", "author a skill", "improve this skill", "audit the skill".
+version: 2.3.0
 skill_schema_version: 1
 deprecated: false
 replaced_by: null
@@ -20,9 +20,77 @@ risk_level: low
 
 ## Purpose
 
-The Skill Creator Skill is a meta-skill for OpenClaw that helps design, generate, validate, and package high-quality OpenClaw skills. Its job is not just to write SKILL.md files. Its job is to produce durable, safe, well-routed, evaluation-ready skills that work reliably in real agent environments.
+Creates, audits, hardens, evaluates, and governs OpenClaw AgentSkills, producing canonical skills that are tool-safe, eval-backed, MCP-ready, context-efficient, and lifecycle-managed.
 
-This implementation is designed to produce a top-tier skill engineering system, not a simple skill scaffolding tool.
+## Explicit Guarantees
+
+Every skill produced by Skill Creator MUST satisfy these guarantees:
+
+### 1. Tool Quality Guarantee
+
+Every generated skill or MCP tool definition MUST have:
+- **Single Responsibility:** One job, clearly scoped
+- **Explicit Schema:** All parameters typed, required/optional marked, constraints documented
+- **Predictable Outputs:** Output contract defines success shape and failure taxonomy
+- **Discovery-Ready Description:** Clear "use this when..." trigger contract, "do NOT use when..." boundaries
+
+**Validation:** Tool surface can be invoked by an agent without clarification prompts.
+
+### 2. Evaluation Guarantee
+
+Every applicable skill MUST include baseline/challenger evals covering:
+- **Trigger Accuracy:** Correct use vs. incorrect use cases
+- **Tool Selection:** Correct tool choice for task
+- **Argument Precision:** Required arguments present, types correct, constraints satisfied
+- **Output Contract Compliance:** Output matches promised shape
+- **Failure-Class Correctness:** Failures classify correctly into taxonomy
+
+**Validation:** `evals/` directory contains eval cases that can be run automatically.
+
+### 3. Approval and Safety Guarantee
+
+Every skill with destructive or open-world actions MUST define:
+- **Action Classification:** Read-only vs. write vs. destructive vs. open-world
+- **Risk Level:** low/medium/high/critical with justification
+- **Approval Gates:** Which actions require human approval before execution
+- **Denial-of-Wallet Protections:** Cost limits, rate limits, runaway-loop detection
+- **Memory Poisoning Defenses:** Input validation, context isolation, trust boundaries
+
+**Validation:** Risk/Safety Boundaries section documents all high-impact actions and controls.
+
+### 4. Context Efficiency Guarantee
+
+Every skill MUST support context-efficient operation:
+- **Deferred Tool Loading:** Skill can be discovered without loading full context
+- **Search-Based Discovery:** Trigger keywords enable tool search without full SKILL.md
+- **Cache-Friendly Structure:** Stable frontmatter prefix, progressive disclosure body
+- **Minimal Context Rules:** Define what context is required vs. available on-demand
+
+**Validation:** Skill loads successfully with minimal context; expanded context available when needed.
+
+### 5. MCP Security Guarantee
+
+Skills marked MCP-ready MUST satisfy:
+- **OAuth 2.1 Assumptions:** Document expected auth flow
+- **Protected Resource Metadata:** Document required metadata endpoints
+- **PKCE Expectations:** Document PKCE requirements if applicable
+- **Audience Validation:** Token audience must match skill scope
+- **Least-Privilege Scopes:** Define minimum scopes required
+- **Secure Token Handling:** No token passthrough, short-lived tokens only
+- **No Token Passthrough:** Never forward tokens to untrusted parties
+
+**Validation:** MCP Readiness section includes security checklist with all items addressed.
+
+### 6. Governance Guarantee
+
+Every skill MUST include governance artifacts:
+- **Promotion Policy:** What must pass before promotion (tests, evals, reviews)
+- **Rollback Policy:** How to revert if skill causes issues
+- **Approval Authority by Risk:** Who must approve high-risk skills
+- **Audit Fields:** Created date, modified date, changelog, deprecation status
+- **Compatibility Notes:** Breaking changes documented in CHANGELOG
+
+**Validation:** CHANGELOG.md exists with version history; promotion policy documented.
 
 ## Trigger Contract
 
@@ -109,17 +177,32 @@ This implementation is designed to produce a top-tier skill engineering system, 
 - output contract
 - risk level (low/medium/high/critical)
 
+### Output Guarantees
+
+Every skill produced MUST satisfy the six explicit guarantees:
+
+| Guarantee | Required Artifact |
+|-----------|-------------------|
+| Tool Quality | Explicit schema, single responsibility, predictable outputs |
+| Evaluation | baseline/challenger evals in `evals/` directory |
+| Approval and Safety | Risk/Safety Boundaries with action classification, approval gates |
+| Context Efficiency | Minimal Context Rules, deferred loading support |
+| MCP Security | MCP Readiness checklist (if MCP-ready) |
+| Governance | CHANGELOG.md, promotion policy, audit fields |
+
 ### Validation Rules
 - frontmatter must parse as valid YAML
 - name field must be valid skill identifier (lowercase, hyphens)
 - description must start with "Use when" or "Use for"
 - required sections must exist (Purpose, Trigger Contract)
 - references must resolve if listed
+- each explicit guarantee must have corresponding artifact
 
 ### Failure Output
 Return a concise blocked status with:
 - reason (specific validation error)
 - missing inputs (what's needed)
+- guarantee violations (which guarantees not met)
 - safe next step (how to fix)
 
 ## Minimal Context Rules
