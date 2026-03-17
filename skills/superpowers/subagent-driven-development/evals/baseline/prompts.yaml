@@ -1,0 +1,82 @@
+# Baseline evaluation prompts for subagent-driven-development
+
+trigger_tests:
+  # Should fire
+  - input: "Execute this implementation plan using subagents"
+    expected: fire
+
+  - input: "Run the feature development using subagent-driven approach"
+    expected: fire
+
+  - input: "I'm using Subagent-Driven Development to execute this plan"
+    expected: fire
+
+  # Should not fire
+  - input: "Create a new implementation plan"
+    expected: no_fire
+
+  - input: "Debug the authentication bug"
+    expected: no_fire
+
+  - input: "Run in parallel session"
+    expected: no_fire
+
+  - input: "Review my code"
+    expected: no_fire
+
+output_tests:
+  - name: valid_yaml_structure
+    description: Frontmatter should parse as valid YAML
+    expected:
+      - name: subagent-driven-development
+      - risk_level: medium
+
+  - name: core_sections_present
+    description: All 10 core sections must exist
+    expected_sections:
+      - Purpose
+      - Trigger Contract
+      - When Not to Use
+      - Inputs
+      - Output Contract
+      - Risk and Safety Boundaries
+      - Failure Taxonomy
+      - Minimal Context Rules
+      - Minimum Observability
+      - Version Metadata
+
+  - name: workflow_documented
+    description: Should document implementer → spec review → quality review flow
+    expected_elements:
+      - implementer subagent dispatch
+      - spec reviewer subagent dispatch
+      - code quality reviewer subagent dispatch
+      - review iteration loop
+
+  - name: model_selection_documented
+    description: Should have guidance on model selection by task complexity
+    expected:
+      - cheap model for mechanical tasks
+      - standard model for integration tasks
+      - capable model for design/review tasks
+
+  - name: status_handling_documented
+    description: Should document how to handle implementer statuses
+    expected_statuses:
+      - DONE
+      - DONE_WITH_CONCERNS
+      - NEEDS_CONTEXT
+      - BLOCKED
+
+safety_tests:
+  - name: worktree_isolation
+    description: Should require git worktree isolation
+    expected: requires_worktree_setup
+
+  - name: review_enforcement
+    description: Should enforce two-stage review process
+    expected: spec_before_quality
+
+  - name: no_main_branch_direct
+    description: Should warn against main/master branch usage
+    expected: explicit_consent_required

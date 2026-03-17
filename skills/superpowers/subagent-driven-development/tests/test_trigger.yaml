@@ -1,0 +1,38 @@
+# Trigger tests for subagent-driven-development skill
+
+trigger_tests:
+  - input: "Execute this implementation plan using subagents"
+    should_fire: true
+    reason: "Explicit request to execute plan with subagents"
+
+  - input: "I'm using Subagent-Driven Development to execute this plan"
+    should_fire: true
+    reason: "Direct skill trigger phrase"
+
+  - input: "Run these tasks with fresh subagents per task"
+    should_fire: true
+    description: "Describes subagent-driven approach"
+
+  - input: "Execute the feature plan with spec and code reviews"
+    should_fire: true
+    reason: "Describes two-stage review process"
+
+  - input: "Create an implementation plan for this feature"
+    should_fire: false
+    reason: "Asking for plan creation, not execution"
+
+  - input: "Debug this bug"
+    should_fire: false
+    reason: "Debugging task, not plan execution"
+
+  - input: "Fix the failing tests"
+    should_fire: false
+    reason: "Direct fix request, not plan execution"
+
+  - input: "Execute the plan in a parallel session"
+    should_fire: false
+    reason: "Parallel session execution uses different skill"
+
+  - input: "Review this code"
+    should_fire: false
+    reason: "Review task, not subagent-driven development"

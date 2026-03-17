@@ -179,6 +179,31 @@ Before responding to code review feedback, the following must be known:
 
 Keep core context focused on the specific feedback being addressed. Load relevant code sections on-demand for verification.
 
+## Minimum Observability
+
+### Required Logging
+
+This skill logs the following events:
+
+| Event | Description |
+|-------|-------------|
+| **Trigger** | When skill activates for code review feedback |
+| **Action** | The response action taken (verify, pushback, clarify, implement) |
+| **Failure** | Any failure to understand feedback or verify changes |
+
+### Logging Format
+
+Events are logged as simple text descriptions. The skill does not require structured logging.
+
+### Key Observations
+
+For code review reception, key things to observe and report:
+- Whether feedback was clear or required clarification
+- Whether suggestion was verified against codebase
+- Whether pushback was necessary and why
+- Whether implementation was sequential with tests
+- Whether suggestions actually broke existing functionality
+
 ## Version Metadata
 
 ### Current Version

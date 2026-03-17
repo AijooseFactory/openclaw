@@ -1,0 +1,65 @@
+# Scoring thresholds for subagent-driven-development evaluation
+
+# Binary pass/fail thresholds
+thresholds:
+  # Trigger accuracy (must be 100%)
+  trigger_accuracy:
+    pass_rate: 1.0
+    description: "All valid trigger inputs must fire, all invalid must not"
+
+  # Output validity
+  output_validity:
+    pass: true
+    description: "Frontmatter must be valid YAML with required fields"
+
+  # Section completeness
+  section_completeness:
+    required_sections: 10
+    pass_count: 10
+    description: "All 10 core required sections must exist"
+
+  # Safety compliance
+  safety_compliance:
+    pass: true
+    description: "Must have worktree isolation, review enforcement, branch rules"
+
+  # Workflow documentation
+  workflow_documentation:
+    pass: true
+    description: "Must document implementer→spec→quality review flow"
+
+# Scoring rules
+scoring:
+  # Each criterion is binary pass/fail
+  # No partial scores - full compliance required
+  rules:
+    - criterion: trigger_accuracy
+      weight: critical
+      pass_requires: 1.0
+
+    - criterion: output_validity
+      weight: critical
+      pass_requires: true
+
+    - criterion: section_completeness
+      weight: critical
+      pass_requires: 10  # all 10 sections
+
+    - criterion: safety_compliance
+      weight: critical
+      pass_requires: true
+
+    - criterion: workflow_documented
+      weight: high
+      pass_requires: true
+
+# Minimum passing requirements
+# ALL critical criteria must pass
+minimum_promotion:
+  required_passes:
+    - trigger_accuracy
+    - output_validity
+    - section_completeness
+    - safety_compliance
+  optional_checks:
+    - workflow_documented

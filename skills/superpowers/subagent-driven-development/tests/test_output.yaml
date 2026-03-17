@@ -1,0 +1,56 @@
+# Output tests for subagent-driven-development skill
+
+output_tests:
+  - name: valid_frontmatter
+    check: frontmatter parses
+    required_fields:
+      - name
+      - description
+      - version
+      - skill_schema_version
+      - risk_level
+
+  - name: required_sections
+    check: all core sections present
+    required_sections:
+      - Purpose
+      - Trigger Contract
+      - When Not to Use
+      - Inputs
+      - Output Contract
+      - Risk and Safety Boundaries
+      - Failure Taxonomy
+      - Minimal Context Rules
+      - Minimum Observability
+      - Version Metadata
+
+  - name: trigger_contract_structure
+    check: trigger contract has required parts
+    required_parts:
+      - Use this skill when
+      - Do NOT use this skill when
+      - Inspect First
+      - Handoff To
+      - Stop Conditions
+
+  - name: risk_level_defined
+    check: risk_level is medium
+    valid_levels:
+      - low
+      - medium
+      - high
+      - critical
+
+  - name: optional_tools_listed
+    check: optional_tools includes subagent tools
+    expected_tools:
+      - sessions_spawn
+      - subagents
+
+  - name: failure_taxonomy_complete
+    check: standard failure classes defined
+    required_classes:
+      - missing_input
+      - implementation_blocked
+      - spec_violation
+      - quality_issues

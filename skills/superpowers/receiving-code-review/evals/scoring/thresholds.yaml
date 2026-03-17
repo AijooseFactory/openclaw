@@ -1,0 +1,70 @@
+# Scoring thresholds for receiving-code-review skill evaluation
+
+scoring_thresholds:
+  trigger_accuracy:
+    pass_threshold: 100
+    description: "Percentage of correct trigger decisions"
+    weights:
+      true_positive: 1
+      false_positive: 1
+      true_negative: 1
+      false_negative: 1
+
+  output_correctness:
+    pass_threshold: 100
+    description: "No forbidden response patterns used"
+    must_pass:
+      - no_performative_agreement
+      - no_thanks_expressions
+
+  verification_behavior:
+    pass_threshold: 100
+    description: "Verifies before implementing"
+    required:
+      - checks_codebase_first
+      - tests_each_change
+
+  pushback_capability:
+    pass_threshold: 80
+    description: "Can appropriately push back when wrong"
+    must_demonstrate:
+      - technical_reasoning
+      - reference_to_working_code
+
+  clarification_requests:
+    pass_threshold: 100
+    description: "Asks clarification BEFORE implementing"
+    critical_behavior: ask_first_when_unclear
+
+  implementation_discipline:
+    pass_threshold: 100
+    description: "One item at a time, test each"
+    required_behaviors:
+      - sequential_implementation
+      - individual_testing
+
+  failure_classification:
+    pass_threshold: 100
+    description: "Properly handles unclear/incorrect feedback"
+    expected_responses:
+      unclear_feedback: ask_for_clarification
+      wrong_suggestion: pushback_with_reasoning
+      verification_failure: check_codebase_first
+
+# Binary pass/fail criteria
+binary_criteria:
+  - name: trigger_accuracy
+    pass: ">= 90%"
+
+  - name: forbidden_phrases
+    pass: "0 occurrences"
+    fail_on:
+      - "You're absolutely right"
+      - "Great point"
+      - "Thank you"
+
+  - name: clarify_before_implement
+    pass: "Always ask before implementing unclear items"
+
+  - name: verify_before_implement
+    pass: "Always verify against codebase"
