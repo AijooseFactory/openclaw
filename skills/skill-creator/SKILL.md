@@ -1,7 +1,7 @@
 ---
 name: skill-creator
 description: Create, edit, improve, or audit AgentSkills. Use when creating a new skill from scratch or when asked to improve, review, audit, tidy up, or clean up an existing skill or SKILL.md file. Also use when editing or restructuring a skill directory (moving files to references/ or scripts/, removing stale content, validating against the AgentSkills spec). Triggers on phrases like "create a skill", "author a skill", "tidy up a skill", "improve this skill", "review the skill", "clean up the skill", "audit the skill".
-version: 2.0.0
+version: 2.2.0
 skill_schema_version: 1
 deprecated: false
 replaced_by: null
@@ -250,7 +250,7 @@ This minimum observability section is separate from the **Observability Expansio
 
 ## Skill Anatomy
 
-Every skill consists of a required SKILL.md file and optional bundled resources:
+Every skill consists of a required core structure and conditional bundled resources:
 
 ```
 skill-name/
@@ -259,49 +259,58 @@ skill-name/
 │   │   ├── name: (required)
 │   │   └── description: (required)
 │   └── Markdown instructions (required)
-└── Bundled Resources (optional)
-    ├── scripts/          - Executable code (Python/Bash/etc.)
-    ├── references/       - Documentation loaded as needed
-    └── assets/           - Files used in output (templates, etc.)
+├── tests/ (required)
+│   └── Test files for skill validation
+├── evals/ (required)
+│   └── Evaluation baselines and criteria
+├── CHANGELOG.md (required)
+│   └── Version history with migration notes
+└── Conditional Resources (create when applicable)
+    ├── scripts/          - Executable code (when skill needs automation)
+    ├── references/       - Documentation (when skill has complex context)
+    └── assets/           - Static files (when skill needs them)
 ```
 
 ### SKILL.md (required)
 - **Frontmatter (YAML):** Contains `name` and `description` fields. Only fields that Codex reads to determine when skill triggers.
 - **Body (Markdown):** Instructions and guidance for using the skill. Only loaded AFTER skill triggers.
 
-### scripts/ (optional)
+### tests/ (required)
+Skill validation tests ensuring the skill functions correctly.
+- **Mandatory:** Every skill must be testable
+- **Minimum:** Smoke tests for core functionality
+- Examples: Unit tests, integration tests, behavior tests
+- Principle: Tests are first-class citizens, not optional additions
+
+### evals/ (required)
+Evaluation criteria and baselines for measuring skill performance.
+- **Mandatory:** Every skill must define evaluation criteria
+- **Minimum:** Clear success criteria and edge cases
+- Examples: Evaluation prompts, expected outputs, scoring rubrics
+- Principle: Evaluation loops are built-in, not bolted-on
+
+### CHANGELOG.md (required)
+Version history and changes for the skill.
+- **Mandatory:** Every skill must track version history
+- **Format:** Reverse chronological order (newest first)
+- **Contents:** Version numbers, dates, changes, deprecation notices, migration paths
+- Principle: Version lifecycle management is foundational, not optional
+
+### scripts/ (conditional)
 Executable code for tasks that require deterministic reliability or are repeatedly rewritten.
-- When to include: Same code rewritten repeatedly, deterministic reliability needed
+- **Create when:** Skill needs automation, deterministic execution, or repeated code patterns
 - Example: `scripts/rotate_pdf.py` for PDF rotation tasks
 
-### references/ (optional)
+### references/ (conditional)
 Documentation loaded as needed to inform Codex's process and thinking.
-- When to include: Documentation that Codex should reference while working
+- **Create when:** Skill has complex multi-file context requirements
 - Examples: Schema docs, API docs, domain knowledge
 - Best practice: If files are large (>10k words), include grep search patterns in SKILL.md
 
 ### assets/ (optional)
 Files not intended to be loaded into context, but used in output Codex produces.
-- When to include: Files needed in final output
+- **Create when:** Skill needs static files in final output
 - Examples: Templates, images, icons, boilerplate code
-
-### tests/ (optional)
-Skill validation tests ensuring the skill functions correctly.
-- When to include: Skills that need automated validation of behavior
-- Examples: Unit tests, integration tests, smoke tests
-- Best practice: Include at minimum smoke tests for core functionality
-
-### evals/ (optional)
-Evaluation criteria and baselines for measuring skill performance.
-- When to include: Skills requiring measurable quality benchmarks
-- Examples: Evaluation prompts, expected outputs, scoring rubrics
-- Best practice: Define clear success criteria and edge cases
-
-### CHANGELOG.md (optional)
-Version history and changes for the skill.
-- When to include: Skills with ongoing maintenance and version tracking
-- Contents: Version numbers, dates, changes, deprecation notices
-- Format: Keep in reverse chronological order (newest first)
 
 ### What NOT to Include in a Skill
 
@@ -310,7 +319,6 @@ A skill should only contain essential files that directly support its functional
 - README.md
 - INSTALLATION_GUIDE.md
 - QUICK_REFERENCE.md
-- CHANGELOG.md
 - etc.
 
 The skill should only contain the information needed for an AI agent to do the job at hand. It should not contain auxiliary context about the process that went into creating it, setup and testing procedures, user-facing documentation, etc.
