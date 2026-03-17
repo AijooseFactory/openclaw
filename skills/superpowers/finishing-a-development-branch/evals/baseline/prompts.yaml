@@ -1,0 +1,86 @@
+# Baseline evaluation prompts for finishing-a-development-branch skill
+# These prompts are used to evaluate skill performance
+
+prompt_sets:
+  trigger_evaluation:
+    description: "Test if skill triggers on correct and incorrect inputs"
+
+    valid_requests:
+      - "Complete this development branch"
+      - "Finish feature and merge PR"
+      - "Clean up my branch after testing"
+      - "I'm done with this feature, merge it"
+      - "Time to finish - how do I integrate?"
+
+    invalid_requests:
+      - "Write a new function"
+      - "Run the test suite"
+      - "Fix the bug in login"
+      - "Review my code"
+      - "Create a new branch"
+
+  workflow_evaluation:
+    description: "Test complete workflow execution"
+
+    scenario_1:
+      name: "Happy path - merge locally"
+      steps:
+        - "Tests pass"
+        - "User selects option 1"
+        - "Branch merged successfully"
+        - "Worktree cleaned up"
+
+    scenario_2:
+      name: "Happy path - create PR"
+      steps:
+        - "Tests pass"
+        - "User selects option 2"
+        - "Branch pushed"
+        - "PR created"
+
+    scenario_3:
+      name: "Keep branch"
+      steps:
+        - "Tests pass"
+        - "User selects option 3"
+        - "Branch preserved"
+
+    scenario_4:
+      name: "Discard work"
+      steps:
+        - "Tests pass"
+        - "User selects option 4"
+        - "User confirms with 'discard'"
+        - "Branch deleted"
+
+  failure_evaluation:
+    description: "Test failure handling"
+
+    failure_cases:
+      - scenario: "Tests failing"
+        expected_behavior: "Block with clear error, don't proceed"
+
+      - scenario: "Merge conflicts"
+        expected_behavior: "Report conflicts, don't force through"
+
+      - scenario: "No confirmation for discard"
+        expected_behavior: "Cancel operation, don't delete"
+
+# Expected outputs for each scenario
+expected_outputs:
+  option_presentation:
+    format: "exactly 4 numbered options"
+    must_include:
+      - "Merge"
+      - "Pull Request"
+      - "Keep"
+      - "Discard"
+
+  confirmation_prompt:
+    format: "Explicit confirmation required"
+    exact_phrase: "Type 'discard' to confirm"
+
+  success_report:
+    format: "Clear completion message"
+    should_include:
+      - "Merged" or "PR created" or "Keeping" or "Deleted"

@@ -1,0 +1,39 @@
+# Trigger tests for dispatching-parallel-agents skill
+# Tests whether the skill fires correctly based on user requests
+
+trigger_tests:
+  - input: "I have 3 failing test files in different subsystems, can you fix them all?"
+    should_fire: true
+    reason: "Multiple independent failures that can run in parallel"
+
+  - input: "Fix all these tests in parallel"
+    should_fire: true
+    reason: "Explicit request for parallel dispatch"
+
+  - input: "I need to investigate 5 independent bugs at the same time"
+    should_fire: true
+    reason: "Multiple independent tasks"
+
+  - input: "Can you run these tasks concurrently?"
+    should_fire: true
+    reason: "Request for concurrent/parallel execution"
+
+  - input: "Fix this one failing test"
+    should_fire: false
+    reason: "Single task, not multiple independent tasks"
+
+  - input: "Debug this bug"
+    should_fire: false
+    reason: "Single failure, not multiple"
+
+  - input: "The tests are all failing because of one bug"
+    should_fire: false
+    reason: "Related failures, not independent"
+
+  - input: "These two bugs are related, fixing one should fix the other"
+    should_fire: false
+    reason: "Explicitly related tasks"
+
+  - input: "Explore the codebase to understand the architecture"
+    should_fire: false
+    reason: "Exploratory task, not discrete tasks"

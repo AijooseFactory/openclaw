@@ -1,0 +1,45 @@
+# Trigger Tests for executing-plans skill
+# Tests verify when the skill should and should not activate
+
+trigger_tests:
+  # Should fire - valid plan execution requests
+  - input: "execute this plan"
+    should_fire: true
+  - input: "I need to implement the plan we wrote"
+    should_fire: true
+  - input: "run the implementation plan"
+    should_fire: true
+  - input: "execute the plan from writing-plans"
+    should_fire: true
+  - input: "follow the implementation steps in the plan"
+    should_fire: true
+  - input: "implement this roadmap"
+    should_fire: true
+
+  # Should NOT fire - not plan execution
+  - input: "write a plan for me"
+    should_fire: false
+  - input: "create a new plan"
+    should_fire: false
+  - input: "help me plan this project"
+    should_fire: false
+  - input: "what tasks are in my plan"
+    should_fire: false
+  - input: "show me the plan"
+    should_fire: false
+
+# Inspect First Tests
+inspect_first_tests:
+  - scenario: "plan exists and is readable"
+    check: "plan file or content available"
+  - scenario: "git worktree setup needed"
+    check: "using-git-worktrees skill available"
+
+# Handoff Tests
+handoff_tests:
+  - condition: "has subagent support available"
+    should_handoff_to: "subagent-driven-development"
+  - condition: "plan needs writing"
+    should_handoff_to: "writing-plans"
+  - condition: "at end of execution"
+    should_handoff_to: "finishing-a-development-branch"

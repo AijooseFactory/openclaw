@@ -1,0 +1,42 @@
+# Test trigger conditions for finishing-a-development-branch skill
+# This file defines inputs that should and should not activate the skill
+
+trigger_tests:
+  # Should fire - completion requests
+  - input: "Complete this branch"
+    should_fire: true
+  - input: "Finish this feature"
+    should_fire: true
+  - input: "Merge my work"
+    should_fire: true
+  - input: "Clean up this branch"
+    should_fire: true
+  - input: "I'm done with this feature, how do I merge it?"
+    should_fire: true
+  - input: "Time to complete development and integrate"
+    should_fire: true
+
+  # Should NOT fire - incomplete work
+  - input: "Run the tests"
+    should_fire: false
+  - input: "Write more code for feature"
+    should_fire: false
+  - input: "Fix this bug"
+    should_fire: false
+  - input: "Review my code"
+    should_fire: false
+
+  # Should NOT fire - different git operations
+  - input: "Create a new branch"
+    should_fire: false
+  - input: "Revert this commit"
+    should_fire: false
+
+# Edge cases
+edge_cases:
+  - input: "complete the branch now"  # lowercase variant
+    should_fire: true
+  - input: "finish branch"  # abbreviated
+    should_fire: true
+  - input: "merge to main"  # different merge context
+    should_fire: true

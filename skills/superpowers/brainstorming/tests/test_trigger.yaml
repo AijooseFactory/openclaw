@@ -1,0 +1,78 @@
+# Test trigger conditions for brainstorming skill
+# This file validates when the skill should and should not fire
+
+trigger_tests:
+  # Should fire - explicit brainstorming requests
+  - input: "let's brainstorm some ideas for the new feature"
+    should_fire: true
+    reason: "Explicit brainstorm request"
+
+  - input: "help me think through the design of this component"
+    should_fire: true
+    reason: "Design exploration request"
+
+  - input: "I need to come up with a solution for X"
+    should_fire: true
+    reason: "Idea generation request"
+
+  - input: "what are some approaches we could take for this?"
+    should_fire: true
+    reason: "Approach exploration request"
+
+  # Should fire - project/implementation planning triggers
+  - input: "let's build a new feature"
+    should_fire: true
+    reason: "New feature implementation request"
+
+  - input: "we need to add functionality to the system"
+    should_fire: true
+    reason: "Adding functionality request"
+
+  - input: "create a new component"
+    should_fire: true
+    reason: "Component creation request"
+
+  # Should NOT fire - existing implementation
+  - input: "fix the bug in the login code"
+    should_fire: false
+    reason: "Bug fixing - use systematic-debugging"
+
+  - input: "write a test for this function"
+    should_fire: false
+    reason: "Test writing - use test-driven-development"
+
+  - input: "refactor this file"
+    should_fire: false
+    reason: "Refactoring - not brainstorming scope"
+
+  # Should NOT fire - planning/execution (already past brainstorm)
+  - input: "execute the implementation plan"
+    should_fire: false
+    reason: "Execution - use executing-plans"
+
+  - input: "create a test suite"
+    should_fire: false
+    reason: "Testing - use test-driven-development"
+
+  # Should NOT fire - administrative tasks
+  - input: "check git status"
+    should_fire: false
+    reason: "Git operation - not brainstorming"
+
+  - input: "update the documentation"
+    should_fire: false
+    reason: "Documentation - not brainstorming"
+
+# Edge cases
+edge_case_tests:
+  - input: "brainstorm"  # Partial word
+    should_fire: true
+    reason: "Contains trigger keyword"
+
+  - input: "BRAINSTORMING"  # Uppercase
+    should_fire: true
+    reason: "Case insensitive match"
+
+  - input: "Let's talk about ideas"  # Informal
+    should_fire: true
+    reason: "Idea discussion implies brainstorming"

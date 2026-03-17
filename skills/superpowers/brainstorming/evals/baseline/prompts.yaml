@@ -1,0 +1,95 @@
+# Baseline evaluation prompts for brainstorming skill
+# Used for comparing challenger improvements against baseline
+
+trigger_evaluation:
+  description: "Evaluate whether brainstorming skill triggers correctly"
+  
+  prompt_template: |
+    For each test case, determine if the brainstorming skill should fire.
+    
+    Test cases:
+    {{test_cases}}
+    
+    Output in YAML format:
+    ```yaml
+    results:
+      - input: "test input"
+        should_fire: true/false
+        actual: true/false
+        pass: true/false
+        reason: "explanation"
+    ```
+
+  test_cases:
+    # Positive cases (should fire)
+    - "let's brainstorm the new feature"
+    - "help me design a component"
+    - "we need to add some functionality"
+    - "how should we approach this problem"
+    - "what ideas do you have for X"
+    
+    # Negative cases (should not fire)
+    - "fix this bug"
+    - "write tests for this"
+    - "refactor the code"
+    - "execute the plan"
+    - "check the logs"
+
+output_evaluation:
+  description: "Evaluate whether brainstorming delivers required outputs"
+  
+  prompt_template: |
+    For the given brainstorming session output, validate:
+    
+    1. Design sections presented with approval requests
+    2. 2-3 approaches proposed with trade-offs
+    3. Clarifying questions asked one at a time
+    4. Complexity assessment included
+    5. Transition to writing-plans skill after approval
+    
+    Output in YAML format:
+    ```yaml
+    results:
+      - criterion: "criterion name"
+        present: true/false
+        meets_standard: true/false
+        notes: "explanation"
+    ```
+
+validation_checks:
+  - name: "design_approval_gate"
+    description: "User approval requested before proceeding"
+    required: true
+    
+  - name: "multiple_approaches"
+    description: "At least 2 approaches proposed"
+    required: true
+    
+  - name: "design_doc_written"
+    description: "Design documented at specified path"
+    required: true
+    
+  - name: "spec_review_loop"
+    description: "Spec review subagent invoked"
+    required: true
+    
+  - name: "writing_plans_invoke"
+    description: "Writing-plans skill invoked at end"
+    required: true
+
+failure_classification:
+  description: "Test failure taxonomy classification"
+  
+  test_scenarios:
+    - scenario: "No user input provided"
+      expected_class: "missing_input"
+      
+    - scenario: "Request unclear"
+      expected_class: "ambiguous_trigger"
+      
+    - scenario: "Request is for bug fixing"
+      expected_class: "unsupported_request"
+      
+    - scenario: "Scope too large"
+      expected_class: "ambiguous_trigger"
+      note: "Should request scope clarification"

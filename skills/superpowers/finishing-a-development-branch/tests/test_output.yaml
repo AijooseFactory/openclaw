@@ -1,0 +1,57 @@
+# Test output validation for finishing-a-development-branch skill
+# This file defines expected output structures and validation rules
+
+output_tests:
+  - name: options_presented
+    description: Should present exactly 4 options
+    validation:
+      type: contains_all
+      items:
+        - "1. Merge back"
+        - "2. Push and create"
+        - "3. Keep the branch"
+        - "4. Discard"
+
+  - name: no_extra_options
+    description: Should not have more than 4 options
+    validation:
+      type: regex_match
+      pattern: "^[\\s\\S]*\\d+\\. [\\s\\S]*\\d+\\. [\\s\\S]*\\d+\\. [\\s\\S]*\\d+\\.[\\s\\S]*$"
+      # Should have exactly 4 numbered items
+
+  - name: test_verification_prompt
+    description: Should verify tests pass before options
+    validation:
+      type: contains
+      text: "test"
+
+  - name: confirmation_for_discard
+    description: Should require confirmation for discard
+    validation:
+      type: contains
+      text: "confirm"
+
+  - name: branch_name_reported
+    description: Should show branch name in output
+    validation:
+      type: regex_match
+      pattern: "branch|commit|worktree"
+
+# Failure state tests
+failure_tests:
+  - name: tests_fail_message
+    context: "When tests fail"
+    expected:
+      - "Tests failing"
+      - "Cannot proceed"
+
+  - name: merge_conflict_message
+    context: "When merge has conflicts"
+    expected:
+      - "conflict"
+      - "Cannot merge"
+
+  - name: discard_confirmation_message
+    context: "When discard is selected"
+    expected:
+      - "Type 'discard' to confirm"

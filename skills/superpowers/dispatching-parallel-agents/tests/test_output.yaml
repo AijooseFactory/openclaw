@@ -1,0 +1,31 @@
+# Output tests for dispatching-parallel-agents skill
+# Tests whether the skill produces correct output format
+
+output_tests:
+  - name: dispatches_multiple_agents
+    description: "When multiple independent tasks, should dispatch one agent per task"
+    check: "Output contains dispatch for each independent task"
+
+  - name: specific_scope_per_agent
+    description: "Each agent should have specific scope defined"
+    check: "Each dispatch includes specific file or subsystem"
+
+  - name: constraints_defined
+    description: "Each agent should have constraints"
+    check: "Output includes what agents should NOT do"
+
+  - name: output_format_specified
+    description: "Agents should be told what output to return"
+    check: "Expected return format specified for agents"
+
+  - name: no_shared_context
+    description: "Agents should get isolated context"
+    check: "Instructions indicate agents should not inherit session context"
+
+  - name: integration_plan
+    description: "Should include plan for integrating results"
+    check: "Output mentions review/integration after agents return"
+
+  - name: sequential_fallback_considered
+    description: "Should consider if tasks are actually independent"
+    check: "Output acknowledges need to verify independence"

@@ -1,0 +1,62 @@
+# Scoring Thresholds for executing-plans skill
+# Binary pass/fail thresholds for evaluation
+
+scoring:
+  trigger_accuracy:
+    pass_threshold: 100
+    fail_on_misfire: true
+    measurements:
+      - name: "correct_fire"
+        threshold: 100
+        description: "Percentage of valid requests that trigger skill"
+      - name: "false_trigger_rate"
+        threshold: 0
+        description: "Percentage of invalid requests that incorrectly trigger"
+
+  output_compliance:
+    pass_threshold: 100
+    measurements:
+      - name: "announcement_present"
+        threshold: 100
+        description: "Skill announces usage at start"
+      - name: "timeline_tracked"
+        threshold: 100
+        description: "Timeline tracking table present"
+      - name: "finishing_skill_called"
+        threshold: 100
+        description: "Handoff to finishing-a-development-branch"
+      - name: "worktree_setup"
+        threshold: 100
+        description: "References git worktree setup"
+
+  safety_compliance:
+    pass_threshold: 100
+    measurements:
+      - name: "plan_review_done"
+        threshold: 100
+        description: "Plan reviewed before execution"
+      - name: "blocker_handling"
+        threshold: 100
+        description: "Stops on blockers"
+      - name: "main_branch_warning"
+        threshold: 100
+        description: "Warns about main/master branch"
+
+  failure_classification:
+    pass_threshold: 100
+    measurements:
+      - name: "missing_input_classified"
+        threshold: 100
+        description: "Missing plan correctly classified"
+      - name: "ambiguous_classified"
+        threshold: 100
+        description: "Ambiguous requests correctly classified"
+      - name: "blocker_classified"
+        threshold: 100
+        description: "Blockers correctly classified"
+
+# Performance thresholds (if measurable)
+performance:
+  load_time_ms:
+    threshold: 500
+    description: "Skill should load in under 500ms"

@@ -1,0 +1,54 @@
+# Test output contract for brainstorming skill
+# Validates that output meets the specified contract
+
+output_tests:
+  # Output Mode Validation
+  - test: "outputs_design_approval_request"
+    description: "Skill must request user approval on design sections"
+    validation: must_include_pattern
+    pattern: "(approval|approve|look right|make sense)"
+
+  - test: "outputs_design_doc_path"
+    description: "Skill must specify design doc path"
+    validation: must_include_pattern
+    pattern: "(docs/superpowers/specs/|spec document|design.md)"
+
+  - test: "outputs_clarifying_questions"
+    description: "Skill must ask questions one at a time"
+    validation: single_question_per_response
+
+  - test: "outputs_approach_proposals"
+    description: "Skill must propose 2-3 approaches with trade-offs"
+    validation: multiple_options
+    min_options: 2
+
+  # Required Fields Validation
+  - test: "includes_complexity_assessment"
+    description: "Design doc must include complexity assessment"
+    validation: must_include
+    content: "Complexity"
+
+  - test: "includes_architecture_section"
+    description: "Design must cover architecture"
+    validation: must_include
+    content: "architecture"
+
+  - test: "includes_component_breakdown"
+    description: "Design must identify key components"
+    validation: must_include
+    content: "component"
+
+  # Output Guarantees
+  - test: "transitions_to_writing_plans"
+    description: "Must invoke writing-plans skill after design approval"
+    validation: skill_invocation
+    skill: "writing-plans"
+
+  # Failure Output Tests
+  - test: "rejects_implementation_before_design"
+    description: "Must not proceed to implementation without design approval"
+    validation: hard_gate_enforced
+
+  - test: "handles_scope_assessment"
+    description: "Must detect when project needs decomposition"
+    validation: scope_check_present

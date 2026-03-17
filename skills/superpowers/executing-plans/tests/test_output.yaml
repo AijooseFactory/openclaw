@@ -1,0 +1,53 @@
+# Output Contract Tests for executing-plans skill
+# Tests verify skill output matches expected format
+
+output_tests:
+  - name: "plan_execution_initiated"
+    description: "Skill announces at start"
+    check: "Contains announcement 'I'm using the executing-plans skill'"
+
+  - name: "timeline_tracking"
+    description: "Tracks actual vs estimated time"
+    check: "Creates or updates timeline tracking table"
+
+  - name: "completion_report"
+    description: "Reports after each task"
+    check: "Contains task completion message format"
+
+  - name: "handoff_to_finishing"
+    description: "Calls finishing-a-development-branch skill when done"
+    check: "References superpowers:finishing-a-development-branch"
+
+  - name: "git_worktree_called"
+    description: "Uses git worktree for isolated workspace"
+    check: "References superpowers:using-git-worktrees"
+
+# Validation Rules
+validation:
+  required_actions:
+    - "announce skill usage at start"
+    - "load and review plan"
+    - "create todo tracking"
+    - "execute tasks sequentially"
+    - "track timeline for each task"
+    - "invoke finishing skill at completion"
+
+  required_safety_checks:
+    - "verify plan before execution"
+    - "stop on blockers"
+    - "ask for clarification when unclear"
+    - "never implement on main without consent"
+
+# Failure Handling Tests
+failure_tests:
+  - scenario: "plan not found"
+    expected_class: "missing_input"
+    expected_resolution: "Request plan location from user"
+
+  - scenario: "unclear instruction"
+    expected_class: "ambiguous_trigger"
+    expected_resolution: "Ask for clarification"
+
+  - scenario: "blocker encountered"
+    expected_class: "execution_blocked"
+    expected_resolution: "Stop and ask for help"
