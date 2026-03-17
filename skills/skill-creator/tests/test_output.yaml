@@ -43,6 +43,12 @@ required_sections:
     validation: "Contains version info"
 
 required_frontmatter_fields:
+  - field: "name"
+    format: "valid skill identifier (lowercase, hyphens)"
+
+  - field: "description"
+    format: "starts with 'Use when' or 'Use for'"
+
   - field: "version"
     format: "semver (e.g., 1.0.0)"
 
