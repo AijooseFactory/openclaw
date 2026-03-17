@@ -1,7 +1,7 @@
 ---
 name: test-driven-development
 description: Use when implementing any feature or bugfix, before writing implementation code. Testing time is predictable - use ai-timeline-estimation with test-specific multipliers.
-version: 1.1.0
+version: 1.2.0
 skill_schema_version: 1
 deprecated: false
 replaced_by: null
@@ -187,6 +187,31 @@ Keep core context minimal. Beyond the basics, reference:
 - Test framework documentation for syntax
 - Project test utilities for helpers
 - Testing anti-patterns for what to avoid
+
+## Minimum Observability
+
+**This is a Core Required section.** Every skill must define minimum observability requirements.
+
+### Required Logging
+
+Every skill must log the following:
+
+| Event | Description |
+|-------|-------------|
+| **Trigger** | When the skill is activated (initialization) |
+| **Action** | The primary action taken by the skill |
+| **Failure** | Any error or failure condition that occurs |
+
+### Logging Format
+
+Logging format is **optional**. Skills may use:
+- Simple text logs
+- Structured JSON format
+- Framework-native logging
+
+### Relationship to Advanced Observability
+
+This minimum observability section is separate from advanced topics like metrics, tracing, and detailed debugging. Advanced topics belong in expanded context loading, not in core required definitions.
 
 ## Version Metadata
 
