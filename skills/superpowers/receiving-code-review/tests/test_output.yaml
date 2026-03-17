@@ -1,0 +1,38 @@
+# Test output contract for receiving-code-review skill
+
+output_tests:
+  - name: no_performative_agreement
+    description: Should not contain performative agreement phrases
+    forbidden_patterns:
+      - "You're absolutely right"
+      - "Great point"
+      - "Excellent feedback"
+      - "Thanks for"
+      - "Thank you for"
+
+  - name: technical_verification
+    description: Should show verification before implementation
+    required_patterns:
+      - "checking"
+      - "verify"
+      - "checking the"
+
+  - name: clarification_request
+    description: When unclear, should ask for clarification FIRST
+    test_case:
+      input: "Fix items 1,2,3,4,5"
+      unclear_items: [4, 5]
+      expected_behavior: ask_before_implement
+
+  - name: pushback_capability
+    description: Should be able to push back with technical reasoning
+    allowed_patterns:
+      - "breaks"
+      - "would cause"
+      - "technically incorrect"
+      - "YAGNI"
+      - "backward compat"
+
+  - name: implementation_order
+    description: Should implement one item at a time, test each
+    required_behavior: sequential_implementation

@@ -1,0 +1,26 @@
+# Output validation tests for test-driven-development skill
+
+output_tests:
+  - name: test_file_created
+    check: "Test file exists at expected location"
+    required: true
+
+  - name: test_has_failing_test
+    check: "Test file contains at least one test case"
+    required: true
+
+  - name: minimal_implementation
+    check: "Implementation code is minimal (passes only required test assertions)"
+    required: true
+
+  - name: test_passes_after_implementation
+    check: "Test passes after implementation code is added"
+    required: true
+
+  - name: no_over_engineering
+    check: "Implementation doesn't include unused parameters or features"
+    required: true
+
+  - name: refactor_check
+    check: "Refactoring phase maintains test pass status"
+    required: false

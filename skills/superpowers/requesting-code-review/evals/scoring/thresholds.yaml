@@ -1,0 +1,71 @@
+# Scoring Thresholds for requesting-code-review skill
+# Binary pass/fail criteria for evaluation
+
+thresholds:
+  # Trigger accuracy (min 90% accuracy required)
+  trigger_accuracy:
+    min_pass_rate: 0.90
+    weight: 2.0
+    description: "Percentage of correctly classified trigger prompts"
+
+  false_positive_rate:
+    max_rate: 0.10
+    weight: 1.5
+    description: "Maximum acceptable false positive rate"
+
+  false_negative_rate:
+    max_rate: 0.10
+    weight: 1.5
+    description: "Maximum acceptable false negative rate"
+
+  # Output validation
+  output_format:
+    required: true
+    weight: 1.0
+    description: "Output contains required fields and structure"
+
+  template_filling:
+    min_completeness: 1.0
+    weight: 1.0
+    description: "All required placeholders filled"
+
+  # Failure handling
+  failure_classification:
+    accuracy: 1.0
+    weight: 1.0
+    description: "Failures correctly classified into taxonomy"
+
+  # Context handling
+  context_preservation:
+    no_session_history: true
+    weight: 1.0
+    description: "Session history not passed to reviewer"
+
+# Pass/Fail criteria
+pass_criteria:
+  trigger_accuracy: ">= 0.90"
+  false_positive_rate: "<= 0.10"
+  false_negative_rate: "<= 0.10"
+  output_format: "== true"
+  template_filling: "== 1.0"
+  failure_classification: "== 1.0"
+  context_preservation: "== true"
+
+# Score calculation
+score_calculation:
+  weighted: true
+  minimum_pass: 0.85
+  formula: "(sum(weight * pass) / sum(weights)) >= minimum_pass"
+
+# Historical benchmarks
+benchmarks:
+  v1.0.0:
+    trigger_accuracy: 0.92
+    false_positive_rate: 0.05
+    false_negative_rate: 0.08
+    overall_score: 0.90
+  v1.1.0:
+    trigger_accuracy: 0.95
+    false_positive_rate: 0.03
+    false_negative_rate: 0.05
+    overall_score: 0.94

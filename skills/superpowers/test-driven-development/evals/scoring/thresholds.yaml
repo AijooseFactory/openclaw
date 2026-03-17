@@ -1,0 +1,38 @@
+# Scoring thresholds for test-driven-development skill evaluation
+
+thresholds:
+  trigger_accuracy:
+    pass: 100
+    fail: < 100
+    description: "Percentage of correct trigger firings"
+    required: true
+
+  code_before_test_violation:
+    pass: 0
+    fail: > 0
+    description: "Number of violations where code was written before test"
+    required: true
+
+  test_passes_immediately:
+    pass: 0
+    fail: > 0
+    description: "Number of tests that pass without implementation"
+    required: true
+
+  minimal_code_compliance:
+    pass: 100
+    fail: < 100
+    description: "Percentage of implementations that are minimal"
+    required: true
+
+  test_green_after_impl:
+    pass: 100
+    fail: < 100
+    description: "Percentage of tests that pass after implementation"
+    required: true
+
+  over_engineering:
+    pass: 0
+    fail: > 0
+    description: "Number of over-engineered implementations"
+    required: true

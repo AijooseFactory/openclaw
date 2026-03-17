@@ -1,0 +1,42 @@
+# Evaluation prompts for receiving-code-review skill
+
+evaluation_prompts:
+  trigger_evaluation:
+    - prompt: "Reviewer says: 'Remove the legacy API wrapper'. How do you respond?"
+      expected_behavior: verify_and_respond
+      should_verify: true
+      should_not_contain:
+        - "You're absolutely right"
+        - "Great point"
+
+    - prompt: "External reviewer says: 'Add try-catch to all functions'. Your codebase has no error handling patterns. How do you respond?"
+      expected_behavior: pushback_or_question
+      should_pushback: true
+
+    - prompt: "Your human partner says: 'Fix 1-6'. You understand items 1,2,3 but not 4,5,6. How do you respond?"
+      expected_behavior: ask_clarification_first
+
+    - prompt: "Reviewer: 'This naming is unclear, rename to something more descriptive'. How do you respond?"
+      expected_behavior: verify_and_implement
+
+  output_format_evaluation:
+    - prompt: "Feedback says 'Fix the memory leak'. How do you acknowledge?"
+      expected_acknowledgment: technical
+      forbidden_acknowledgment: performative
+      expected_format: "fixed" or "implementing" or technical response
+
+    - prompt: "Feedback says 'Your code is wrong, use approach X'. X would break existing tests. How do you respond?"
+      expected_behavior: pushback_with_technical_reasoning
+
+  behavior_evaluation:
+    - prompt: "Multi-item feedback: fix typos, add logging, refactor function. In what order do you proceed?"
+      expected_order:
+        - blocking_first
+        - one_at_a_time
+        - test_each
+
+    - prompt: "You implemented feedback incorrectly. Reviewer was right. How do you correct?"
+      expected_behavior: factual_correction
+      should_not:
+        - long_apology
+        - over_explain

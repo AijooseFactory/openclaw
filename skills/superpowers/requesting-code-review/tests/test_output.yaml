@@ -1,0 +1,45 @@
+# Output Tests for requesting-code-review skill
+# Tests that validate the skill produces correct output structure
+
+output_tests:
+  - name: valid_subagent_dispatch
+    description: When skill fires, should dispatch superpowers:code-reviewer
+    check: output contains reference to code-reviewer subagent
+    expected: true
+
+  - name: git_sha_extraction
+    description: Should be able to extract BASE_SHA and HEAD_SHA
+    check: Can parse git SHA format
+    expected: true
+
+  - name: template_placeholders_filled
+    description: Review request should include required placeholders
+    check: |
+      - WHAT_WAS_IMPLEMENTED present
+      - PLAN_OR_REQUIREMENTS present
+      - BASE_SHA present
+      - HEAD_SHA present
+      - DESCRIPTION present
+    expected: all_present
+
+  - name: review_response_handling
+    description: Should properly handle review feedback response
+    check: |
+      - Can parse Critical/Important/Minor issues
+      - Can parse Assessment verdict
+      - Can determine action (fix/skip/push_back)
+    expected: true
+
+  - name: failure_classification
+    description: Should categorize failures correctly
+    check: |
+      - missing_input when template fields empty
+      - invalid_sha when git SHA doesn't exist
+      - empty_diff when no changes
+    expected: all_correct
+
+# Validation criteria
+validation:
+  output_format_valid: true
+  all_required_fields_present: true
+  failure_taxonomy_correct: true

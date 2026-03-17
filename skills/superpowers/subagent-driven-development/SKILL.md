@@ -1,15 +1,279 @@
 ---
 name: subagent-driven-development
 description: Use when executing implementation plans with independent tasks in the current session. Each subagent works in isolation with fresh context. Use ai-timeline-estimation for task times and add coordination overhead.
+version: 1.1.0
+skill_schema_version: 1
+deprecated: false
+replaced_by: null
+minimum_openclaw_version: "1.0.0"
+supported_models:
+  - general
+preferred_model_traits:
+  - strong coordination
+  - task planning
+required_tools: []
+optional_tools:
+  - sessions_spawn
+  - subagents
+risk_level: medium
 ---
 
 # Subagent-Driven Development
+
+## Purpose
 
 Execute plan by dispatching fresh subagent per task, with two-stage review after each: spec compliance review first, then code quality review.
 
 **Why subagents:** You delegate tasks to specialized agents with isolated context. By precisely crafting their instructions and context, you ensure they stay focused and succeed at their task. They should never inherit your session's context or history — you construct exactly what they need. This also preserves your own context for coordination work.
 
 **Core principle:** Fresh subagent per task + two-stage review (spec then quality) = high quality, fast iteration
+
+**What this skill does:**
+- Reads implementation plans and extracts tasks with full context
+- Dispatches implementer subagents per task with curated context
+- Runs two-stage review: spec compliance first, then code quality
+- Coordinates iteration cycles until reviews pass
+- Tracks progress via TodoWrite
+- Uses model selection based on task complexity
+
+## Trigger Contract
+
+### Use this skill when
+- User asks to execute an implementation plan with multiple independent tasks
+- Implementation plan has clear tasks that can be executed in isolation
+- User wants to stay in the current session (not create parallel session)
+- User mentions "subagent-driven development", "execute plan with subagents", or similar
+- Plan is well-specified and tasks are mostly independent
+
+### Do NOT use this skill when
+- No implementation plan exists (use planning skills first)
+- Tasks are tightly coupled and require shared context between them
+- User wants to execute in a parallel session (use executing-plans skill)
+- One-off implementation without plan (just implement directly)
+- Brainstorming or manual execution first (don't use subagents)
+
+### Inspect First
+- Implementation plan file and structure
+- Number of tasks and dependencies
+- Required prompt templates (implementer-prompt.md, spec-reviewer-prompt.md, code-quality-reviewer-prompt.md)
+- Available model tiers for task assignment
+
+### Handoff To
+- `superpowers:writing-plans` for creating the plan this skill executes
+- `superpowers:executing-plans` for parallel session execution instead
+- `superpowers:finishing-a-development-branch` after all tasks complete
+
+### Stop Conditions
+- Plan file missing or unreadable
+- No tasks extracted from plan
+- Subagent repeatedly BLOCKED without resolution path
+- User explicitly stops the process
+
+## When Not to Use
+
+### Common Misactivation Scenarios
+
+**Don't use for:**
+- Tightly coupled tasks requiring shared context between subagents
+- Plans that need parallel session execution
+- One-off manual implementation without structured plan
+- Brainstorming or exploratory work
+- Debugging existing code (use systematic debugging)
+
+### Alternative Skills
+
+| Request | Use Instead |
+|---------|-------------|
+| "Execute plan in parallel session" | superpowers:executing-plans |
+| "Create an implementation plan" | superpowers:writing-plans |
+| "Debug this issue" | Systematic debugging |
+| "Implement this directly" | Manual execution (no skill needed) |
+| "Finish the development branch" | superpowers:finishing-a-development-branch |
+
+## Inputs
+
+### Required Inputs
+- Implementation plan (file or text)
+- Access to prompt templates (implementer-prompt.md, spec-reviewer-prompt.md, code-quality-reviewer-prompt.md)
+- Git worktree setup capability
+- TodoWrite tool for task tracking
+
+### Optional Inputs
+- Model preference by task complexity
+- Timeline constraints
+- Specific review criteria
+
+### Input Formats
+- Plan file path or markdown content
+- Task list as structured information
+- Context details: files to modify, dependencies, constraints
+
+## Output Contract
+
+### Output Mode
+- Complete task execution through subagents
+- Git commits per task
+- Task completion status in TodoWrite
+- Final code review summary
+
+### Required Artifacts
+- Each task implemented and committed
+- Spec compliance review passed
+- Code quality review passed
+- Progress tracked in TodoWrite
+
+### Output Guarantees
+- Fresh subagent context per task (no context pollution)
+- Two-stage review process enforced
+- Review loops until approval
+- Model selection appropriate to task complexity
+
+### Validation Rules
+- Must use git worktrees for isolation
+- Must complete spec review before code quality review
+- Must not skip review iterations
+- Must track progress in TodoWrite
+
+### Failure Output
+- Status report: DONE, DONE_WITH_CONCERNS, NEEDS_CONTEXT, BLOCKED
+- Specific blocker reason if BLOCKED
+- Recommended next action based on status
+
+## Risk and Safety Boundaries
+
+### Risk Level
+**medium** - Executes code changes via subagents, uses git worktrees for isolation
+
+### Trust Boundaries
+
+| Boundary | Trust Level | Notes |
+|----------|-------------|-------|
+| User request | Trusted | User explicitly requests execution |
+| Implementation plan | Moderate | Validate against existing codebase |
+| Subagent output | Verify via review | Always review before acceptance |
+| Git operations | Isolated via worktrees | No direct branch modifications |
+
+### Primary Risks
+
+| Risk | Mitigation |
+|------|------------|
+| Incorrect implementation | Two-stage review (spec + quality) catches issues |
+| Context pollution | Fresh subagent per task, no inheritance |
+| Branch conflicts | Git worktree isolation required |
+| Subagent misunderstanding | Review loops until correct |
+| Over/under implementation | Spec compliance review verifies scope |
+
+### Basic Safety Rules
+1. Always use git worktrees for task isolation
+2. Never skip reviews or review iterations
+3. Use appropriate model tier for task complexity
+4. Never proceed with unfixed review issues
+5. Track all progress in TodoWrite
+6. Start on main/master only with explicit user consent
+
+## Failure Taxonomy
+
+### Standard Failure Classes
+
+| Class | Description | Resolution |
+|-------|-------------|------------|
+| missing_input | Required context not provided | Provide context, re-dispatch subagent |
+| ambiguous_task | Task scope unclear | Clarify with user, update plan |
+| implementation_blocked | Subagent cannot complete task | Re-dispatch with more context or better model |
+| spec_violation | Code doesn't match spec | Implementer fixes, re-review |
+| quality_issues | Code quality problems | Implementer fixes, re-review |
+| review_timeout | Review takes too long | Check if subagent is stuck, intervene |
+| git_conflict | Worktree conflict | Resolve conflict manually |
+
+### Expected Failure Behavior
+
+For each task execution:
+1. Implementer reports status: DONE, DONE_WITH_CONCERNS, NEEDS_CONTEXT, BLOCKED
+2. If BLOCKED, assess and re-dispatch appropriately
+3. Implementer fixes issues found in review
+4. Re-review until approvals
+5. Never skip iteration or proceed with issues
+
+### Minimum Failure Handling
+- **NEEDS_CONTEXT**: Provide missing context, re-dispatch same model
+- **BLOCKED**: Re-dispatch with more capable model or break task
+- **spec_violation**: Implementer fixes, spec reviewer re-reviews
+- **quality_issues**: Implementer fixes, quality reviewer re-reviews
+
+## Minimal Context Rules
+
+### Core Required Context
+
+Before using this skill, the following must be known:
+
+| Information | Source | Required |
+|-------------|--------|----------|
+| Implementation plan | User or file | Yes |
+| Task list with full text | Extracted from plan | Yes |
+| Prompt templates | Skill files | Yes |
+| Git worktree setup | Skill requirement | Yes |
+| Review criteria | Prompt templates | Yes |
+
+### Context Principle
+
+The controller (main agent) does the heavy lifting:
+- Extracts all tasks with full context upfront
+- Curates exactly what each subagent needs
+- Provides complete information before dispatch
+
+Subagents receive focused context for their specific task, not the entire plan.
+
+### What Goes in Subagent Context
+- Task description with full text
+- Relevant files and code snippets
+- Dependencies and constraints
+- Specific instructions from plan
+- Scene-setting: where this task fits in overall implementation
+
+### What Stays with Controller
+- Overall plan progress
+- Task interdependencies
+- Coordination state
+- TodoWrite tracking
+
+## Minimum Observability
+
+### Required Logging
+
+Every subagent execution should log:
+
+| Event | Description |
+|-------|-------------|
+| **Trigger** | Task dispatched to implementer subagent |
+| **Action** | Implementation completed, review started |
+| **Failure** | Review issues found, re-review cycle |
+
+### Logging Format
+
+Simple text logs are sufficient:
+- Task start: "Dispatching implementer for [task name]"
+- Review: "Spec review: [PASS/FAIL], Code quality: [PASS/FAIL]"
+- Completion: "Task [N] complete: [commit SHA]"
+
+## Version Metadata
+
+| Field | Value | Purpose |
+|-------|-------|---------|
+| version | 1.1.0 | Current skill version |
+| skill_schema_version | 1 | Schema identifier |
+| deprecated | false | Active skill |
+| replaced_by | null | Not deprecated |
+| minimum_openclaw_version | 1.0.0 | Compatibility minimum |
+| supported_models | general | Universal applicability |
+| preferred_model_traits | strong coordination, task planning | Optimal model characteristics |
+
+### Versioning Rules
+This skill follows semantic versioning:
+- PATCH: Bug fixes, documentation improvements
+- MINOR: New features, workflow enhancements
+- MAJOR: Structural changes, breaking modifications
+
+---
 
 ## When to Use
 

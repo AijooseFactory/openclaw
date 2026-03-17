@@ -1,0 +1,75 @@
+# Baseline Evaluation Prompts for requesting-code-review skill
+# These prompts define the expected behavior for evaluation
+
+prompts:
+  trigger_prompts:
+    # Positive cases - should trigger
+    - prompt: "I've just completed implementing the user authentication feature. Should I request a code review before moving on?"
+      expected_trigger: true
+      category: task_completion
+
+    - prompt: "Ready to merge this PR, but let me request a review first"
+      expected_trigger: true
+      category: pre_merge
+
+    - prompt: "I'm having trouble figuring out this bug. Can you review my changes and give me a fresh perspective?"
+      expected_trigger: true
+      category: stuck
+
+    - prompt: "Task 3 is done, let me get code review before Task 4"
+      expected_trigger: true
+      category: subagent_workflow
+
+    # Negative cases - should NOT trigger
+    - prompt: "Just fixed a typo in a comment"
+      expected_trigger: false
+      category: trivial_change
+
+    - prompt: "Run the unit tests to make sure everything passes"
+      expected_trigger: false
+      category: wrong_skill
+
+    - prompt: "This is work in progress, don't review yet"
+      expected_trigger: false
+      category: wip
+
+  output_prompts:
+    - prompt: "Code review returned: Strengths: Clean architecture. Issues: Important - missing validation. Assessment: Ready to merge. What should I do?"
+      expected_output_type: action_on_feedback
+      should_fix_important: true
+
+    - prompt: "Code review found Critical issue - SQL injection vulnerability. What now?"
+      expected_output_type: action_on_feedback
+      should_fix_critical: true
+
+    - prompt: "Reviewer says Important issue but I think they're wrong because tests pass. How to respond?"
+      expected_output_type: push_back
+      should_include_reasoning: true
+
+  failure_prompts:
+    - prompt: "Requesting review but I don't know what I implemented"
+      expected_failure: missing_input
+      missing_field: WHAT_WAS_IMPLEMENTED
+
+    - prompt: "BASE_SHA is abc123 but git log doesn't show this commit"
+      expected_failure: invalid_sha
+
+    - prompt: "Git diff is empty between HEAD and HEAD~1"
+      expected_failure: empty_diff
+
+# Expected behavior rules
+rules:
+  - name: review_after_task
+    description: Must request review after each subagent task
+    condition: "After subagent task completes, skill should suggest review"
+    expected: true
+
+  - name: no_review_for_trivial
+    description: Should not trigger for trivial changes
+    condition: "For typos/whitespace, skill should not trigger"
+    expected: true
+
+  - name: context_preservation
+    description: Should not pass session history to reviewer
+    condition: "Reviewer gets only code diff, not conversation"
+    expected: true

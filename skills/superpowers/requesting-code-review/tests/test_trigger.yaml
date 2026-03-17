@@ -1,0 +1,73 @@
+# Trigger Tests for requesting-code-review skill
+# Tests that validate when the skill should/should not activate
+
+trigger_tests:
+  # Should fire - explicit review requests
+  - input: "Please review this code"
+    should_fire: true
+    reason: Explicit review request
+
+  - input: "Can you review my changes?"
+    should_fire: true
+    reason: Direct review request
+
+  - input: "I need a code review"
+    should_fire: true
+    reason: Review needed
+
+  # Should fire - task completion contexts
+  - input: "Just finished Task 2, should I get review?"
+    should_fire: true
+    reason: After task completion, review appropriate
+
+  - input: "Completed the feature, let me request review"
+    should_fire: true
+    reason: Feature completion
+
+  # Should fire - pre-merge context
+  - input: "Before I merge to main, review this"
+    should_fire: true
+    reason: Pre-merge review request
+
+  - input: "Ready to merge, request review first"
+    should_fire: true
+    reason: Pre-merge
+
+  # Should fire - stuck/refresh context
+  - input: "I'm stuck, can someone review this?"
+    should_fire: true
+    reason: Fresh perspective requested
+
+  # Should NOT fire - trivial changes
+  - input: "Fixed a typo in the README"
+    should_fire: false
+    reason: Trivial change
+
+  - input: "Just changing whitespace"
+    should_fire: false
+    reason: Trivial change
+
+  # Should NOT fire - work in progress
+  - input: "This is a draft, don't review yet"
+    should_fire: false
+    reason: WIP, not ready for review
+
+  # Should NOT fire - skip explicit
+  - input: "Quick fix, skip review"
+    should_fire: false
+    reason: User explicitly skips
+
+  # Should NOT fire - wrong context
+  - input: "Run the tests for me"
+    should_fire: false
+    reason: Different skill needed
+
+  - input: "Explain how this works"
+    should_fire: false
+    reason: No review requested
+
+# Validation criteria
+validation:
+  trigger_accuracy_min: 0.90
+  false_positive_max: 0.10
+  false_negative_max: 0.10

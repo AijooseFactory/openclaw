@@ -1,0 +1,31 @@
+# Test trigger conditions for receiving-code-review skill
+
+trigger_tests:
+  # Should trigger
+  - input: "The reviewer said I should remove the legacy code"
+    should_fire: true
+
+  - input: "I got feedback on my PR, should I implement it?"
+    should_fire: true
+
+  - input: "External reviewer suggests adding error handling"
+    should_fire: true
+
+  - input: "My code review feedback says to refactor this function"
+    should_fire: true
+
+  - input: "The PR has some comments I need to address"
+    should_fire: true
+
+  # Should NOT trigger
+  - input: "Give me feedback on this code"
+    should_fire: false
+
+  - input: "Write a new function for me"
+    should_fire: false
+
+  - input: "What's wrong with this code?"
+    should_fire: false
+
+  - input: "Review this PR"
+    should_fire: false

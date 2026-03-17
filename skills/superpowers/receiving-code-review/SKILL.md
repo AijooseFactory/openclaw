@@ -1,9 +1,200 @@
 ---
 name: receiving-code-review
 description: Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable - requires technical rigor and verification, not performative agreement or blind implementation
+version: 1.1.0
+skill_schema_version: 1
+deprecated: false
+replaced_by: null
+minimum_openclaw_version: "1.0.0"
+supported_models:
+  - general
+preferred_model_traits:
+  - strong code review
+  - feedback handling
+required_tools: []
+optional_tools:
+  - read
+risk_level: low
 ---
 
 # Code Review Reception
+
+## Purpose
+
+Defines the rigorous, technically-focused approach for receiving and evaluating code review feedback. Ensures code review responses prioritize technical correctness over social performance, requiring verification before implementation and proper pushback when feedback is technically incorrect.
+
+## Trigger Contract
+
+### Use this skill when
+- Receiving code review feedback from any source
+- Feedback seems unclear or technically questionable
+- Implementing suggestions from code reviewers
+- Need to verify feedback against codebase reality
+- Deciding whether to push back on incorrect suggestions
+
+### Do NOT use this skill when
+- Giving code review feedback (use code review skill)
+- Performing initial code analysis
+- Writing new code from scratch without review feedback
+- Responding to non-technical feedback
+
+### Inspect First
+- The complete feedback without partial implementation
+- Codebase reality vs. suggested changes
+- Existing tests and their coverage
+- Your human partner's prior architectural decisions
+
+### Handoff To
+- Code review giving skill for providing feedback
+- Systematic debugging if feedback indicates bugs
+
+### Stop Conditions
+- Feedback conflicts with your human partner's explicit decisions (discuss first)
+- Cannot verify suggestion without additional context
+- Suggestion would break existing functionality
+
+## When Not to Use
+
+### Common Misactivation Scenarios
+
+**Don't use for:**
+- Initial code writing (no review feedback involved)
+- Responding to non-code-review comments
+- General technical questions
+- Debugging unfamiliar issues from scratch
+
+### Alternative Skills
+
+| Request | Use Instead |
+|---------|-------------|
+| Give code review feedback | Code review skill |
+| Write code from scratch | No skill needed - just write |
+| Debug a new issue | Systematic debugging skill |
+
+## Inputs
+
+### Required Inputs
+- Code review feedback (from any source: your human partner, external reviewers)
+- Access to relevant codebase context
+
+### Optional Inputs
+- Prior architectural decisions from your human partner
+- Background on reviewer expertise/context
+
+### Input Formats
+- Inline code review comments
+- PR review summaries
+- Chat-based feedback
+- Documented change requests
+
+## Output Contract
+
+### Output Mode
+- Technical acknowledgment of feedback
+- Implementation of verified changes (one at a time)
+- Reasoned pushback with technical reasoning when appropriate
+- Clarification requests for unclear items
+
+### Required Actions
+1. Read complete feedback without reacting
+2. Understand restating in own words (or ask)
+3. Verify against codebase reality
+4. Evaluate technical soundness for THIS codebase
+5. Respond with technical acknowledgment or pushback
+6. Implement one item at a time, test each
+
+### Expected Behaviors
+- No performative agreement ("You're absolutely right!")
+- Technical verification before implementation
+- Proper pushback with reasoning when suggestion is wrong
+- Clarification requests for unclear items before implementation
+
+## Risk and Safety Boundaries
+
+This skill is **low risk** - it produces code changes after verification and handles feedback evaluation.
+
+### Trust Boundaries
+
+| Boundary | Trust Level | Notes |
+|----------|-------------|-------|
+| Feedback from your human partner | Trusted | Implement after understanding |
+| Feedback from external reviewers | Untrusted | Verify before implementing |
+| Codebase state | Trusted | Current implementation is reference |
+| Tests | Trusted | Test results indicate correctness |
+
+### Primary Risks
+
+| Risk | Mitigation |
+|------|------------|
+| Blindly implementing wrong suggestion | Always verify against codebase first |
+| Breaking existing functionality | Check tests before/after changes |
+| Partial implementation of unclear items | Clarify ALL unclear items before ANY implementation |
+| Missing context | Ask if reviewer understands full context |
+
+### Basic Safety Rules
+1. Verify suggestions against codebase reality before implementing
+2. Do not implement unclear items - ask first
+3. Push back with technical reasoning when suggestion is wrong
+4. Test each change individually
+
+## Failure Taxonomy
+
+### Standard Failure Classes
+
+| Class | Description | Resolution |
+|-------|-------------|------------|
+| unclear_feedback | Feedback items unclear or ambiguous | Ask for clarification before implementing any part |
+| unverified_implementation | Implementing without checking codebase | Verify against codebase first |
+| missed_regression | Changes break existing tests | Run tests, revert if broken |
+| wrong_context | Suggestion doesn't fit this codebase | Push back with technical reasoning |
+| partial_clarification | Clarifying only some unclear items | Clarify ALL unclear items first |
+
+### Expected Failure Behavior
+
+Every code review response should:
+1. Complete verification before implementation
+2. Ask clarification for unclear items BEFORE implementing anything
+3. Push back when suggestion is technically incorrect
+4. Test each change individually
+
+### Minimum Failure Handling
+- **unclear_feedback**: "I need clarification on items X and Y before proceeding."
+- **unverified_implementation**: "Let me verify this against the codebase first."
+- **wrong_context**: "This suggestion would break [X]. Technical reason: [Y]."
+
+## Minimal Context Rules
+
+### Core Required Context
+
+Before responding to code review feedback, the following must be known:
+
+| Information | Source | Required |
+|-------------|--------|----------|
+| Complete feedback | Review comment/message | Yes |
+| Relevant code | Current codebase | Yes |
+| Test status | Test execution | Before implementing |
+| Your human partner's decisions | Prior discussions | If relevant |
+
+### Context Principle
+
+Keep core context focused on the specific feedback being addressed. Load relevant code sections on-demand for verification.
+
+## Version Metadata
+
+### Current Version
+- **version:** 1.1.0
+- **skill_schema_version:** 1
+- **deprecated:** false
+
+### Versioning Rules
+- Use semantic versioning
+- Increment PATCH for safe fixes to response patterns
+- Increment MINOR for new handling patterns
+- Increment MAJOR for structural changes
+
+---
+
+# Original Content (Preserved)
 
 ## Overview
 

@@ -1,35 +1,51 @@
 ---
 name: systematic-debugging
 description: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes. Debugging time varies - use ai-timeline-estimation for fix time, but investigation time is unpredictable.
+version: 1.1.0
+skill_schema_version: 1
+deprecated: false
+replaced_by: null
+minimum_openclaw_version: "1.0.0"
+supported_models:
+  - general
+preferred_model_traits:
+  - strong reasoning
+  - hypothesis testing
+required_tools: []
+optional_tools:
+  - exec
+  - read
+  - write
+risk_level: medium
 ---
 
 # Systematic Debugging
 
-## Overview
+## Purpose
 
-Random fixes waste time and create new bugs. Quick patches mask underlying issues.
+Provides a rigorous, systematic methodology for debugging any technical issue. Random fixes waste time and create new bugs. Quick patches mask underlying issues.
 
 **Core principle:** ALWAYS find root cause before attempting fixes. Symptom fixes are failure.
 
 **Violating the letter of this process is violating the spirit of debugging.**
 
-## The Iron Law
+### Explicit Guarantees
 
-```
-NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
-```
+This skill guarantees:
+- **Root cause identification**: Every debugging session MUST trace back to the actual root cause before fixing
+- **Scientific method**: Hypothesis testing with minimal changes, one variable at a time
+- **Failure tracking**: All failed fix attempts are tracked and inform architectural reconsideration
+- **Verification first**: Fixes are verified against failing tests created BEFORE the fix
 
-If you haven't completed Phase 1, you cannot propose fixes.
+## Trigger Contract
 
-## When to Use
-
-Use for ANY technical issue:
-- Test failures
-- Bugs in production
-- Unexpected behavior
-- Performance problems
-- Build failures
-- Integration issues
+### Use this skill when
+- Encountering any bug, test failure, or unexpected behavior
+- Before proposing ANY fixes (mandatory precondition)
+- Fixing production issues
+- Debugging performance problems
+- Investigating build failures
+- Resolving integration issues
 
 **Use this ESPECIALLY when:**
 - Under time pressure (emergencies make guessing tempting)
@@ -42,6 +58,226 @@ Use for ANY technical issue:
 - Issue seems simple (simple bugs have root causes too)
 - You're in a hurry (rushing guarantees rework)
 - Manager wants it fixed NOW (systematic is faster than thrashing)
+
+### Do NOT use this skill when
+- The issue is purely cosmetic with no functional impact
+- You need to write new code from scratch (not fixing existing bugs)
+- Request is for code review of correct implementation
+- Task is educational/explanatory without a broken system
+
+### Inspect First
+- Error messages and stack traces
+- Recent changes (git log, diff)
+- Environment configuration
+- Similar working code in codebase
+
+### Handoff To
+- `superpowers:test-driven-development` for creating failing test cases (Phase 4)
+- `superpowers:verification-before-completion` for verifying fix success
+
+### Stop Conditions
+- True environmental/external issue (not code): document investigation, handle appropriately
+- Architectural problem after 3+ failed fixes: discuss with human before continuing
+
+## When Not to Use
+
+### Common Misactivation Scenarios
+
+**Don't use for:**
+- Writing new features from scratch
+- Code review of correct implementations
+- Explaining how code works (no bug to fix)
+- Purely UI/cosmetic changes without functional bug
+- Configuration changes for new systems (not debugging broken ones)
+
+### Alternative Approaches
+
+| Request | Use Instead |
+|---------|-------------|
+| "Write a new feature" | No skill needed |
+| "Explain this code" | No skill needed |
+| "Review this implementation" | Code review skill |
+| "Add new configuration" | Configuration skill |
+| "Debug failing test" | This skill (systematic-debugging) |
+
+## Inputs
+
+### Required Inputs
+- Description of the bug, failure, or unexpected behavior
+- Reproduction steps (if known)
+- Error messages or stack traces
+- Context about when issue occurs
+
+### Optional Inputs
+- Recent changes that might have caused the issue
+- Relevant code location
+- Environment details
+- Whether issue is reproducible
+
+### Input Formats
+- Natural language description
+- Error message text
+- Stack trace
+- Steps to reproduce
+
+## Output Contract
+
+### Output Mode
+- Root cause identification
+- Fix recommendation (after investigation complete)
+- Documentation of what was tried
+
+### Required Outputs
+1. **Root cause** - Clear statement of WHY the bug occurs
+2. **Evidence** - Facts supporting the conclusion
+3. **Fix** - Minimal change addressing root cause (not symptoms)
+4. **Verification** - Test passes after fix
+
+### Output Guarantees
+- No fix proposed without root cause investigation
+- Failed fix attempts are documented
+- Architecture is questioned after 3+ failures
+- Failing test created before fix (Phase 4.1)
+
+### Failure Output
+- Documented investigation (what was checked, result)
+- Clear statement if issue appears environmental/external
+- Recommendation for next steps if architecture is suspect
+
+## Risk and Safety Boundaries
+
+**This is a Core Required section.** Every skill must define its safety posture.
+
+### Risk Level
+**medium** - Skill modifies code files but only within controlled fix workflow
+
+### Trust Boundaries
+
+| Boundary | Trust Level | Notes |
+|----------|-------------|-------|
+| User's bug description | Untrusted | Validate by reproducing |
+| Error messages | Trusted | Direct system output |
+| Stack traces | Trusted | Debugging info |
+| Code under investigation | Trusted | In-scope codebase |
+| Proposed fix | Untrusted | Must verify before committing |
+
+### Primary Risks
+
+| Risk | Mitigation |
+|------|------------|
+| Introducing new bugs | Create failing test first, verify after fix |
+| Breaking working features | Run full test suite after fix |
+| Incomplete root cause | Follow all 4 phases, don't skip |
+| Fixing symptoms not cause | Phase 4.5 architecture check after 3 failures |
+
+### Basic Safety Rules
+1. Create failing test BEFORE fixing (mandatory)
+2. One fix at a time - isolate variables
+3. Verify fix works before proceeding
+4. Run full test suite after any change
+5. Question architecture after 3+ failed attempts
+
+## Failure Taxonomy
+
+**This is a Core Required section.** Every skill must define a standard way to fail.
+
+### Standard Failure Classes
+
+| Class | Description | Resolution |
+|-------|-------------|------------|
+| cannot_reproduce | Issue not reproducible with given steps | Gather more data, ask for details |
+| ambiguous_symptom | Not enough info to identify root cause | Request additional context |
+| unsupported_request | Not a bug/issue to debug | Hand off to appropriate skill |
+| environment_issue | Issue is truly environmental | Document, handle appropriately |
+| architectural_problem | 3+ fixes failed, pattern indicates architecture issue | Discuss with human before continuing |
+| verification_failed | Fix didn't work | Return to Phase 1 with new info |
+
+### Expected Failure Behavior
+1. Classify failure using standard taxonomy
+2. Explain specific blocker in user-friendly terms
+3. Return safest next step
+4. Never pretend to succeed
+
+### Minimum Failure Handling
+- **cannot_reproduce**: Ask for more details, try variations
+- **environment_issue**: Document investigation, implement handling
+- **architectural_problem**: STOP fixing, discuss with human
+- **verification_failed**: Return to Phase 1, new information available
+
+## Minimal Context Rules
+
+Every skill must define what must be known before using it. This is separate from full context loading.
+
+### Core Required Context
+
+Before using this skill, the following must be known:
+
+| Information | Source | Required |
+|-------------|--------|----------|
+| Skill name and description | Frontmatter | Yes |
+| When to use / not use | Trigger Contract section | Yes |
+| Safety constraints | Risk Level + Risk/Safety Boundaries | Yes |
+| Expected outputs | Output Contract section | Yes |
+| The Four Phases | Purpose section | Yes |
+
+### Context Principle
+
+Keep core context minimal. The core systematic debugging workflow is:
+1. Root Cause Investigation (Phase 1)
+2. Pattern Analysis (Phase 2)
+3. Hypothesis and Testing (Phase 3)
+4. Implementation (Phase 4)
+
+Detailed techniques (root-cause-tracing.md, defense-in-depth.md) are in supporting files for expanded context loading.
+
+## Minimum Observability
+
+**This is a Core Required section.** Every skill must define minimum observability requirements.
+
+### Required Logging
+
+Every skill execution must track:
+
+| Event | Description |
+|-------|-------------|
+| **Trigger** | When systematic-debugging is activated |
+| **Phase** | Current phase (1-4) being executed |
+| **Fix Attempts** | Each failed fix attempt is logged |
+| **Completion** | Whether root cause found + fix verified OR handed off |
+
+### Logging Format
+
+Simple text-based logging:
+- Phase transitions
+- Hypothesis formation and test results
+- Failed fix attempts with reason
+- Final outcome (success/architectural issue/handoff)
+
+## Version Metadata
+
+Every skill must declare version information in frontmatter:
+
+| Field | Required | Purpose |
+|-------|----------|---------|
+| version | Yes | Semantic version (MAJOR.MINOR.PATCH) - currently 1.1.0 |
+| deprecated | Yes | Whether this version is deprecated - currently false |
+| replaced_by | Yes (if deprecated) | Name of replacement skill - currently null |
+
+### Versioning Rules
+- Use semantic versioning
+- Increment PATCH for safe internal fixes
+- Increment MINOR for backward-compatible enhancements
+- Increment MAJOR for breaking structural changes
+
+---
+
+## The Iron Law
+
+```
+NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
+```
+
+If you haven't completed Phase 1, you cannot propose fixes.
 
 ## The Four Phases
 
@@ -231,7 +467,7 @@ If you catch yourself thinking:
 
 **If 3+ fixes failed:** Question the architecture (see Phase 4.5)
 
-## your human partner's Signals You're Doing It Wrong
+## Your Human Partner's Signals You're Doing It Wrong
 
 **Watch for these redirections:**
 - "Is that not happening?" - You assumed without verifying

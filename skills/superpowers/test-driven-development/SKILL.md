@@ -1,9 +1,208 @@
 ---
 name: test-driven-development
 description: Use when implementing any feature or bugfix, before writing implementation code. Testing time is predictable - use ai-timeline-estimation with test-specific multipliers.
+version: 1.1.0
+skill_schema_version: 1
+deprecated: false
+replaced_by: null
+minimum_openclaw_version: "1.0.0"
+supported_models:
+  - general
+preferred_model_traits:
+  - strong testing
+  - iterative development
+required_tools: []
+optional_tools:
+  - exec
+  - read
+  - write
+risk_level: low
 ---
 
 # Test-Driven Development (TDD)
+
+## Purpose
+
+Implements test-driven development methodology - write the test first, watch it fail, write minimal code to pass. Testing time is predictable and efficient with AI assistance.
+
+This skill enforces the discipline of TDD where tests are written BEFORE implementation code, ensuring that every piece of production code has a corresponding failing test first. This guarantees tests actually verify the intended behavior rather than accidentally passing on existing (potentially buggy) implementation.
+
+## Trigger Contract
+
+### Use this skill when
+- Implementing any new feature
+- Fixing any bug
+- Refactoring existing code
+- Making behavior changes to code
+- The user asks to implement something with tests
+
+### Do NOT use this skill when
+- Creating throwaway prototypes (ask human partner first)
+- Generating boilerplate code (ask human partner first)
+- Writing configuration files (ask human partner first)
+- The user wants to test existing code (use a different testing skill)
+
+### Inspect First
+- Current test framework and test file locations
+- Existing test patterns in the codebase
+- Test utilities and helpers available
+
+### Handoff To
+- Testing anti-patterns skill for guidance on test patterns to avoid
+
+### Stop Conditions
+- When implementation code exists but no tests (violates TDD)
+- When tests pass before implementation (wrong test order)
+
+## When Not to Use
+
+### Common Misactivation Scenarios
+
+**Don't use for:**
+- One-off debugging sessions
+- Exploratory coding (but then discard and start fresh with TDD)
+- Documentation-only changes
+- Changes that don't affect behavior
+
+### Alternative Skills
+
+| Request | Use Instead |
+|---------|-------------|
+| "Test existing code" | Testing framework or test execution skill |
+| "Run the test suite" | Test runner skill |
+| "Add test coverage" | Coverage analysis skill |
+| "Debug failing tests" | Debugging skill |
+
+## Inputs
+
+### Required Inputs
+- Feature or behavior to implement
+- Expected behavior specification (what should happen)
+- File/function names being implemented
+
+### Optional Inputs
+- Test framework preference (Jest, pytest, etc.)
+- Existing test patterns to follow
+- Test utilities available in the project
+
+### Input Formats
+- Natural language description of desired behavior
+- API or function signature to implement
+- Requirements or user story
+
+## Output Contract
+
+### Output Mode
+- Test file with failing test(s)
+- Minimal implementation code to pass tests
+- Test execution results
+
+### Required Fields
+- Test file with proper naming convention
+- Minimum one failing test demonstrating desired behavior
+- Implementation code that passes the test
+
+### Output Guarantees
+
+| Guarantee | Required Artifact |
+|-----------|-------------------|
+| Test-first | Test fails before implementation |
+| Minimal code | Implementation only passes test |
+| Green verification | All tests pass after implementation |
+| Refactor phase | Code cleaned while keeping tests green |
+
+### Validation Rules
+- Test must FAIL before code is written
+- Test must pass after minimal implementation
+- No new test starts until green
+- Tests must use real code (mocks only when unavoidable)
+
+### Failure Output
+- If code exists before test: reject, require deletion and restart
+- If test passes immediately: reject, test is for existing behavior
+- If implementation is over-engineered: reject, require minimal code
+
+## Risk and Safety Boundaries
+
+**Risk Level: low** - This skill creates test files and minimal implementation code in the workspace. No destructive operations.
+
+### Trust Boundaries
+
+| Boundary | Trust Level | Notes |
+|----------|-------------|-------|
+| User input | Untrusted | Validate feature descriptions before implementing |
+| Test files | Trusted | Created in designated test directories |
+| Implementation code | Trusted | Minimal code written to pass tests only |
+| External test frameworks | Untrusted | Don't assume framework availability |
+
+### Primary Risks
+
+| Risk | Mitigation |
+|------|------------|
+| Test framework not available | Check framework availability before starting |
+| Test file conflicts | Use unique naming, check existing files |
+| Over-engineered implementation | Enforce minimal code rule strictly |
+| Skipping TDD steps | Reject any code before test |
+
+### Basic Safety Rules
+1. Never write implementation code before a failing test
+2. Always verify test fails for expected reason
+3. Delete any code written before tests
+4. Keep tests green during refactoring
+
+## Failure Taxonomy
+
+### Standard Failure Classes
+
+| Class | Description | Resolution |
+|-------|-------------|------------|
+| code_before_test | Implementation code exists before test | Delete code, write test first |
+| test_passes_immediately | Test passes before any implementation | Test is for existing behavior, write new test |
+| wrong_failure_reason | Test fails but not for expected reason | Verify test actually tests desired behavior |
+| over_engineered | Implementation does more than test requires | Write minimal code to pass test |
+| test_not_-green | Tests fail after implementation | Fix implementation, not test |
+
+### Expected Failure Behavior
+
+- **code_before_test**: "Delete implementation code, write failing test first following TDD"
+- **test_passes_immediately**: "This test passes - it tests existing behavior. Write a NEW test for the feature you want to add"
+- **wrong_failure_reason**: "Test failing for unexpected reason. Verify test actually demonstrates the desired behavior"
+- **over_engineered**: "Implementation does more than required. Remove extra features, only code to pass the test"
+- **test_not_green**: "Implementation failed tests. Fix implementation code, not the test"
+
+## Minimal Context Rules
+
+### Core Required Context
+
+| Information | Source | Required |
+|-------------|--------|----------|
+| Feature to implement | User request | Yes |
+| Expected behavior | User request | Yes |
+| Test framework | Project inspection | Yes |
+| Test location | Project structure | Yes |
+
+### Context Principle
+
+Keep core context minimal. Beyond the basics, reference:
+- Test framework documentation for syntax
+- Project test utilities for helpers
+- Testing anti-patterns for what to avoid
+
+## Version Metadata
+
+| Field | Value | Purpose |
+|-------|-------|---------|
+| version | 1.1.0 | Current skill version |
+| skill_schema_version | 1 | Schema identifier |
+| deprecated | false | Active skill |
+| replaced_by | null | No replacement |
+| minimum_openclaw_version | 1.0.0 | Minimum required version |
+
+### Version History
+- 1.1.0 - Added Skill Creator v2.4.0 structure
+- 1.0.0 - Initial TDD methodology skill
+
+---
 
 ## Overview
 

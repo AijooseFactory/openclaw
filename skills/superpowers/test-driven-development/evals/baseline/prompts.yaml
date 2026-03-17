@@ -1,0 +1,43 @@
+# Baseline evaluation prompts for test-driven-development skill
+
+baseline_prompts:
+  - name: basic_tdd_cycle
+    prompt: |
+      Implement a function called `retryOperation` that retries a failing operation
+      exactly 3 times before giving up.
+      
+      Use TDD: write a failing test first, verify it fails, then write minimal code to pass.
+
+    expected_behavior:
+      - test_file_created: true
+      - test_fails_before_code: true
+      - test_passes_after_code: true
+      - minimal_implementation: true
+
+  - name: bug_fix_tdd
+    prompt: |
+      Fix the bug where the login function accepts any password.
+      The login should reject empty passwords with error "Password required".
+      
+      Use TDD: write failing test first demonstrating the bug.
+
+    expected_behavior:
+      - test_file_created: true
+      - test_catches_bug: true
+      - fix_validates_password: true
+
+  - name: refactor_with_tests
+    prompt: |
+      Refactor this function to use async/await:
+      ```javascript
+      function fetchData(callback) {
+        setTimeout(() => callback(null, { data: 'test' }), 100);
+      }
+      ```
+      
+      Use TDD: write tests BEFORE refactoring to ensure behavior is preserved.
+
+    expected_behavior:
+      - tests_exist_before_refactor: true
+      - tests_pass_after_refactor: true
+      - behavior_preserved: true
