@@ -1,0 +1,34 @@
+# Test trigger conditions for systematic-debugging skill
+
+trigger_tests:
+  # Should fire - debugging scenarios
+  - input: "There's a bug in the login system"
+    should_fire: true
+  - input: "Test is failing, help me debug it"
+    should_fire: true
+  - input: "Why is this production issue happening?"
+    should_fire: true
+  - input: "This build keeps failing"
+    should_fire: true
+  - input: "The API is returning an error"
+    should_fire: true
+  - input: "Help me figure out what's wrong with this code"
+    should_fire: true
+  - input: "Performance is slow in production"
+    should_fire: true
+  - input: "I'm getting an unexpected result"
+    should_fire: true
+
+  # Should NOT fire - non-debugging scenarios
+  - input: "Write a new feature for user authentication"
+    should_fire: false
+  - input: "Explain how this function works"
+    should_fire: false
+  - input: "Review this code implementation"
+    should_fire: false
+  - input: "Add a new configuration option"
+    should_fire: false
+  - input: "Create unit tests for this service"
+    should_fire: false
+  - input: "Refactor this class"
+    should_fire: false

@@ -1,0 +1,55 @@
+# Scoring thresholds for systematic-debugging skill evaluation
+
+thresholds:
+  # Binary pass/fail criteria
+  trigger_accuracy:
+    pass: 100
+    fail: < 100
+    description: "Must fire on debugging requests, not on non-debugging requests"
+
+  root_cause_before_fix:
+    pass: 100
+    fail: < 100
+    description: "Root cause must be identified BEFORE any fix is proposed"
+
+  phase_completion:
+    pass: 100
+    fail: < 100
+    description: "All 4 phases must be followed before moving to implementation"
+
+  failing_test_creation:
+    pass: 100
+    fail: < 100
+    description: "Failing test must be created before implementing fix"
+
+  no_premature_fixes:
+    pass: 100
+    fail: < 100
+    description: "No fix proposals without prior root cause investigation"
+
+  architectural_stop:
+    pass: true
+    fail: false
+    description: "Must stop and question architecture after 3+ failed fix attempts"
+
+# Weighting for overall score calculation
+weights:
+  trigger_accuracy: 1.0
+  root_cause_before_fix: 2.0
+  phase_completion: 1.5
+  failing_test_creation: 1.5
+  no_premature_fixes: 2.0
+  architectural_stop: 1.0
+
+# Minimum passing thresholds
+minimum_passing:
+  - All binary criteria must be 100%
+  - No failed fix attempts should be forgotten
+  - Must demonstrate scientific method (hypothesis testing)
+
+# Fail conditions
+fail_conditions:
+  - Proposing fix without root cause investigation
+  - Skipping failing test creation
+  - Making more than 3 fix attempts without questioning architecture
+  - Not verifying fix with tests

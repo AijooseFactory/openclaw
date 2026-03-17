@@ -1,0 +1,85 @@
+# Baseline evaluation prompts for systematic-debugging skill
+
+evaluation_prompts:
+  # Trigger accuracy tests
+  trigger_tests:
+    - name: basic_debug_request
+      input: "There's a bug in the login flow"
+      expected_behavior: fires to activate systematic-debugging
+
+    - name:_test_failure
+      input: "One of my tests is failing"
+      expected_behavior: fires to activate systematic-debugging
+
+    - name: production_issue
+      input: "Production is down, getting errors"
+      expected_behavior: fires to activate systematic-debugging
+
+    - name: non_debug_feature_request
+      input: "Write a new API endpoint"
+      expected_behavior: does NOT fire (not a debugging request)
+
+    - name: non_debug_explanation
+      input: "How does this function work?"
+      expected_behavior: does NOT fire (not debugging)
+
+  # Output format tests
+  output_tests:
+    - name: root_cause_before_fix
+      prompt: |
+        Debug this issue: "The user login returns a 500 error after 10 minutes of inactivity"
+        
+        What is the root cause? What fix would you propose?
+      expected_output: |
+        - Root cause identified BEFORE fix
+        - Evidence or hypothesis stated
+        - Not jumping to implementation
+
+    - name: four_phase_structure
+      prompt: |
+        Debug this: "Unit tests pass locally but fail in CI"
+        
+        Walk through your debugging approach.
+      expected_output: |
+        - Phase 1: Investigation (reproduce, gather evidence)
+        - Phase 2: Pattern analysis
+        - Phase 3: Hypothesis and testing
+        - Phase 4: Implementation
+
+    - name: failing_test_first
+      prompt: |
+        There's a bug: "The counter doesn't increment on form submission"
+        
+        Show how you would approach fixing this.
+      expected_output: |
+        - Create failing test case FIRST
+        - Then implement fix
+        - Then verify test passes
+
+    - name: three_failures_architectural
+      prompt: |
+        You've tried 3 different fixes for this bug and each reveals a new problem elsewhere.
+        
+        What should you do?
+      expected_output: |
+        - STOP attempting more fixes
+        - Question the architecture
+        - Discuss with human before continuing
+
+# Success criteria for binary evaluation
+success_criteria:
+  - criterion: trigger_accuracy
+    description: Skill fires on debugging requests, doesn't fire on non-debugging
+    pass_threshold: "100%"
+
+  - criterion: root_cause_before_fix
+    description: Root cause identified before any fix proposed
+    pass_threshold: "100%"
+
+  - criterion: phase_structure
+    description: Follows the Four Phases structure
+    pass_threshold: "100%"
+
+  - criterion: failing_test_requirement
+    description: Creates failing test before fix implementation
+    pass_threshold: "100%"

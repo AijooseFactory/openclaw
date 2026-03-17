@@ -1,0 +1,64 @@
+# Test output validation for systematic-debugging skill
+
+output_tests:
+  - name: contains_root_cause_identification
+    description: Output should identify root cause before proposing fix
+    check: |
+      Output contains:
+      - Root cause statement (e.g., "The root cause is...")
+      - Evidence supporting conclusion
+      - Not jumping to fix without investigation
+
+  - name: follows_phase_structure
+    description: Should follow the 4-phase structure
+    check: |
+      Output demonstrates:
+      - Phase 1: Root cause investigation
+      - Phase 2: Pattern analysis (if applicable)
+      - Phase 3: Hypothesis and testing
+      - Phase 4: Implementation (if root cause found)
+
+  - name: no_premature_fixes
+    description: Should not propose fixes without root cause
+    check: |
+      If fix is proposed, there should be evidence that:
+      - Root cause was identified first
+      - Hypothesis was tested
+      - Evidence gathered
+
+  - name: documents_failed_attempts
+    description: Failed fix attempts should be documented
+    check: |
+      When fix fails:
+      - What was tried is documented
+      - Returns to earlier phase for retry
+      - After 3 failures, architecture is questioned
+
+  - name: has_failing_test_before_fix
+    description: Should create failing test before implementing fix
+    check: |
+      For fix implementation:
+      - Failing test case created first
+      - Test demonstrates the bug
+      - Fix passes the test
+
+  - name: risk_level_correct
+    description: Risk level should be medium
+    check: |
+      Frontmatter contains:
+      - risk_level: medium
+
+  - name: has_required_sections
+    description: All required sections must be present
+    check: |
+      SKILL.md contains:
+      - Purpose
+      - Trigger Contract
+      - When Not to Use
+      - Inputs
+      - Output Contract
+      - Risk and Safety Boundaries
+      - Failure Taxonomy
+      - Minimal Context Rules
+      - Minimum Observability
+      - Version Metadata
