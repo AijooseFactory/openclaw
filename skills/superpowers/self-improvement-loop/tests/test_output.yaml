@@ -1,0 +1,40 @@
+# Output Contract Tests for self-improvement-loop
+# Run: pytest tests/ -v
+
+output_tests:
+  # Required fields
+  - name: session_summary_required
+    check: "output contains session_summary"
+    pass_if: "session_summary is present and non-empty"
+  - name: findings_required
+    check: "output contains findings"
+    pass_if: "findings is a list (can be empty)"
+  - name: actions_taken_required
+    check: "output contains actions_taken"
+    pass_if: "actions_taken is a list (can be empty)"
+  
+  # Triage pattern
+  - name: findings_triaged
+    check: "all findings have triage decision"
+    pass_if: "each finding has one of: applied, captured, dismissed"
+  
+  # Memory placement
+  - name: learnings_placed
+    check: "learnings placed in correct memory location"
+    pass_if: "each learning has a valid memory path"
+  
+  # State files
+  - name: state_updated_if_ongoing
+    check: "state files updated for ongoing work"
+    pass_if: "state file exists and is updated if work is ongoing"
+
+failure_tests:
+  - name: no_changes
+    scenario: "session with no uncommitted changes and no learnings"
+    expected_output: "Nothing to wrap up"
+  - name: blocked_commit
+    scenario: "git commit fails"
+    expected_output: "git error message with manual resolution suggestion"
+  - name: ambiguous_memory
+    scenario: "unclear where to place learning"
+    expected_output: "memory hierarchy options presented to user"

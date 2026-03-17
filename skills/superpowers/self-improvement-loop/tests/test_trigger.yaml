@@ -1,0 +1,40 @@
+# Trigger Tests for self-improvement-loop
+# Run: pytest tests/ -v
+
+trigger_tests:
+  # Should fire
+  - input: "wrap up"
+    should_fire: true
+    phase: "full"
+  - input: "close session"
+    should_fire: true
+    phase: "full"
+  - input: "end session"
+    should_fire: true
+    phase: "full"
+  - input: "wrap things up"
+    should_fire: true
+    phase: "full"
+  - input: "what did we learn"
+    should_fire: true
+    phase: "remember"
+  - input: "capture this"
+    should_fire: true
+    phase: "capture"
+
+  # Should NOT fire
+  - input: "create a skill"
+    should_fire: false
+    reason: "use skill-creator instead"
+  - input: "fix this bug"
+    should_fire: false
+    reason: "use systematic debugging"
+  - input: "continue working"
+    should_fire: false
+    reason: "not a wrap-up request"
+  - input: "write documentation"
+    should_fire: false
+    reason: "use documentation skill"
+  - input: "explain this code"
+    should_fire: false
+    reason: "no skill needed"

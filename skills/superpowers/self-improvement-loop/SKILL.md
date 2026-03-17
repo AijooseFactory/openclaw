@@ -1,32 +1,267 @@
 ---
 name: self-improvement-loop
 description: Use at session end (user says "wrap up", "close session", "end session", "wrap things up") or when user explicitly asks for learning capture. Runs end-of-session checklist for shipping, memory, and self-improvement. Creates, audits, and evolves agent configuration over time — gets smarter with each session.
-version: 1.0.0
+version: 1.1.0
+skill_schema_version: 1
+deprecated: false
+replaced_by: null
+minimum_openclaw_version: "1.0.0"
+supported_models:
+  - general
+preferred_model_traits:
+  - strong file operations
+  - reliable structured output
+required_tools: []
+optional_tools:
+  - exec
+  - read
+  - write
 risk_level: low
 ---
 
-# Self-Improvement Loop (OpenClaw)
+# Self-Improvement Loop
 
-Every session is an opportunity to improve. This skill runs a systematic end-of-session process that captures learnings, extracts patterns, and evolves configuration — making the system smarter over time.
+## Purpose
 
-## The Core Principle
+Runs a systematic end-of-session process that captures learnings, extracts patterns, and evolves configuration — making the system smarter over time. Ensures nothing valuable is lost to compaction.
 
+**Core Principle:**
 ```
 Sessions end. Context compacts. Files persist.
 ```
 
 What you don't capture is lost to compaction. What you don't extract stays noise. What you don't apply never compounds.
 
-## When to Use
+## Trigger Contract
 
-| Trigger | Action |
-|---------|--------|
-| User says "wrap up" | Run full end-of-session checklist |
-| User says "close session" | Run full end-of-session checklist |
-| User says "end session" | Run full end-of-session checklist |
-| User says "what did we learn" | Run Phase 2 (Remember It) |
-| User says "capture this" | Run learning extraction |
-| User says "wrap things up" | Run full end-of-session checklist |
+### Use this skill when
+- User says "wrap up", "close session", "end session", "wrap things up"
+- User says "what did we learn" → Run Phase 2 (Remember It) only
+- User says "capture this" → Run learning extraction only
+- User explicitly asks for learning capture
+- Session naturally concludes with work to preserve
+
+### Do NOT use this skill when
+- User asks to directly solve a domain problem
+- User wants to continue working (not wrapping up)
+- Request is for one-off operation without persistence
+- User asks about skill creation (use skill-creator)
+
+### Inspect First
+- Current session context (what was discussed)
+- Open state files in `memory/active/`
+- Uncommitted changes in project directories
+- In-progress tasks or work
+
+### Handoff To
+- `skill-creator` — Create skills from automation patterns found in Phase 3
+- `writing-skills` — TDD approach for new skills identified during review
+- `ai-timeline-estimation` — Estimate time for automation implementations
+
+### Stop Conditions
+- Session was purely conversational with no learnings
+- User explicitly cancels wrap-up
+- No files were touched and no decisions made
+- Unsafe request would create harmful automation
+
+## When Not to Use
+
+### Common Misactivation Scenarios
+
+**Don't use for:**
+- Active work sessions (used for wrap-up only)
+- Domain problem solving (use domain-specific skill)
+- Skill creation (use skill-creator)
+- Documentation writing (use documentation skill)
+
+### Alternative Skills
+
+| Request | Use Instead |
+|---------|-------------|
+| "Create a skill" | skill-creator |
+| "Write documentation" | Documentation skill |
+| "Debug this issue" | Systematic debugging |
+| "Continue working" | No skill needed - continue |
+
+## Inputs
+
+### Required Inputs
+- Session context (conversation history)
+- Project workspace path
+
+### Optional Inputs
+- Specific learnings to capture (if user provides)
+- Override memory location
+- Skip phases (user requests partial wrap-up)
+
+### Input Formats
+- Natural language: "wrap up", "close session", "end session"
+- Specific request: "capture this learning about X"
+- Partial request: "just run Phase 2"
+
+## Output Contract
+
+### Output Mode
+- File artifacts (state files, memory updates, new skills)
+- Summary report (findings and actions taken)
+- Validation confirmation (what was preserved)
+
+### Required Fields
+- session_summary (brief recap of session)
+- findings (list with triage: applied/captured/dismissed)
+- actions_taken (files created/modified)
+- next_session_state (if ongoing work)
+
+### Output Guarantees
+
+Every wrapped session MUST satisfy:
+
+| Guarantee | Required Artifact |
+|-----------|-------------------|
+| Shipping | Uncommitted work committed or explicitly deferred |
+| Memory | Learnings placed in correct memory location |
+| Self-Improvement | Findings triaged (apply/capture/dismiss) |
+| State Continuity | State files updated for ongoing work |
+| Safety | No harmful automation created |
+
+### Validation Rules
+- git status clean OR explicit deferral
+- Learnings placed in memory hierarchy
+- State files updated if ongoing work
+- Findings triaged (not just listed)
+
+### Failure Output
+Return a concise blocked status with:
+- reason (specific blocker)
+- missing_inputs (what's needed)
+- safe_next_step (how to fix)
+
+## Minimal Context Rules
+
+Every skill must define what must be known before using it.
+
+### Core Required Context
+
+Before using this skill, the following must be known:
+
+| Information | Source | Required |
+|-------------|--------|----------|
+| Skill name and description | Frontmatter | Yes |
+| When to use / not use | Trigger Contract section | Yes |
+| Memory hierarchy | Phase 2 section | Yes |
+| Triage pattern | Phase 3 section | Yes |
+
+### Context Principle
+
+Keep core context minimal (under 500 words). Detailed procedures and examples belong in the phases section.
+
+### Always Load
+- Name and description (frontmatter)
+- Trigger rules (Use/Don't Use sections)
+- Triage pattern (apply/capture/dismiss)
+- Memory hierarchy locations
+
+### Load On Demand
+- Detailed phase procedures
+- Integration with other skills
+- Timeline estimation tables
+
+## Version Metadata
+
+Every skill must declare version information in frontmatter:
+
+| Field | Value | Purpose |
+|-------|-------|---------|
+| version | 1.1.0 | Semantic version |
+| deprecated | false | Current version |
+| replaced_by | null | No replacement |
+
+### Versioning Rules
+- Increment PATCH for minor wrap-up procedure fixes
+- Increment MINOR for new phases or integration points
+- Increment MAJOR for breaking changes to memory hierarchy
+
+## Risk and Safety Boundaries
+
+**This is a Core Required section.**
+
+### Risk Level
+**low** — Session wrap-up only, no destructive operations
+
+### Trust Boundaries
+
+| Boundary | Trust Level | Notes |
+|----------|-------------|-------|
+| Session context | Trusted | Conversation history is reliable |
+| Project files | Trusted within workspace | Only modify files in designated paths |
+| External URLs | Untrusted | Never fetch URLs during wrap-up |
+| User input | Untrusted | Validate all explicit requests |
+
+### Primary Risks
+
+| Risk | Mitigation |
+|------|------------|
+| Over-automation | Ask before creating skills/hooks |
+| Wrong memory location | Use decision framework in Phase 2 |
+| Premature publishing | Wait for user approval in Phase 4 |
+| Lost context | Always write important details to files |
+
+### Basic Safety Rules
+1. Only create files in designated memory/skill paths
+2. Ask before creating new skills
+3. Never delete user data without explicit approval
+4. Always commit with descriptive messages
+
+## Failure Taxonomy
+
+**This is a Core Required section.**
+
+### Standard Failure Classes
+
+| Class | Description | Resolution |
+|-------|-------------|------------|
+| no_changes | No uncommitted changes or learnings | Report "Nothing to wrap up" |
+| blocked_commit | Git commit fails | Report error, suggest manual commit |
+| ambiguous_memory | Unsure where to place learning | Ask user with options |
+| skill_creation_risky | Proposed automation may be harmful | Reject with explanation |
+| state_conflict | State file has conflicts | Show diff, ask user to resolve |
+
+### Expected Failure Behavior
+
+Every wrap-up should:
+1. Classify the failure using standard taxonomy
+2. Explain the specific blocker in user-friendly terms
+3. Return the safest next step
+4. Never pretend to succeed
+
+### Minimum Failure Handling
+- **no_changes**: Report "Session clean, nothing to wrap up"
+- **blocked_commit**: Show git error, suggest manual resolution
+- **ambiguous_memory**: Present memory hierarchy, ask for placement
+- **skill_creation_risky**: Explain risk, suggest safer alternative
+
+## Minimum Observability
+
+**This is a Core Required section.**
+
+### Required Logging
+
+Every wrap-up must log the following:
+
+| Event | Description |
+|-------|-------------|
+| **Trigger** | When wrap-up starts (initialization) |
+| **Phase** | Which phase is executing (Ship/Remember/Review/Publish) |
+| **Action** | Files created/modified, commits made |
+| **Finding** | Learnings discovered and triage decision |
+| **Completion** | Session wrapped successfully |
+
+### Logging Format
+
+Logging format is optional. Skills may use:
+- Simple text summary at session end
+- File-based logging in memory/
+- No logging for clean sessions
 
 ## The Four Phases
 
@@ -59,28 +294,28 @@ Review session for learnings. Decide where each belongs in OpenClaw's memory hie
 
 | Location | Purpose | Example |
 |----------|---------|---------|
-| `MEMORY.md` | Project-level facts, milestones, decisions | Architecture decisions, team structure, infrastructure facts |
-| `memory/*.md` | Session-specific detailed notes | Day-by-day activity logs, detailed decisions |
-| `IDENTITY.md` | Agent persona, role, capabilities | Who the agent is, mission, capabilities |
-| `SOUL.md` | Agent philosophy, values, temperament | Core drive, principles, communication style |
-| `USER.md` | User preferences, context | CEO name, preferences, infrastructure |
-| `AGENTS.md` | Team structure, skill assignments | Agent roles, skill-to-role mapping |
-| `TOOLS.md` | Tool usage guidance | Best practices for available tools |
-| `HEARTBEAT.md` | Routine planning tasks | Morning sync, periodic checks |
-| `/app/skills/` | Modular capabilities | Domain-specific skills, superpowers |
+| `MEMORY.md` | Project-level facts, milestones, decisions | Architecture decisions, team structure |
+| `memory/*.md` | Session-specific detailed notes | Day-by-day activity logs |
+| `IDENTITY.md` | Agent persona, role, capabilities | Who the agent is, mission |
+| `SOUL.md` | Agent philosophy, values, temperament | Core drive, principles |
+| `USER.md` | User preferences, context | CEO name, preferences |
+| `AGENTS.md` | Team structure, skill assignments | Agent roles, mapping |
+| `TOOLS.md` | Tool usage guidance | Best practices for tools |
+| `HEARTBEAT.md` | Routine planning tasks | Morning sync, checks |
+| `/app/skills/` | Modular capabilities | Domain-specific skills |
 
 **Decision Framework:**
-- Permanent project convention? → `MEMORY.md` or new skill in `/app/skills/`
-- Scoped to specific file types? → New skill with `description` specifying scope
-- Pattern/discovery worth remembering? → `memory/YYYY-MM-DD.md` with detailed context
+- Permanent project convention? → `MEMORY.md` or new skill
+- Scoped to specific file types? → New skill with scope
+- Pattern/discovery worth remembering? → `memory/YYYY-MM-DD.md`
 - Agent persona update? → `IDENTITY.md` or `SOUL.md`
 - User preference update? → `USER.md`
 - Team structure change? → `AGENTS.md`
 
 **LCM (Lossless Context Management):**
-- OpenClaw uses LCM to compact conversation history into summaries
-- Summary DAG preserves critical information across compaction
-- Use `lcm_expand` to retrieve compacted details when needed
+- OpenClaw uses LCM to compact conversation history
+- Summary DAG preserves critical information
+- Use `lcm_expand` to retrieve compacted details
 
 ### Phase 3: Review & Apply (Self-Improvement)
 
@@ -106,9 +341,9 @@ Every finding must be triaged — never just listed:
 
 | Finding | Action |
 |---------|--------|
-| Skill gap | Invoke `skill-creator` to create/update skill, or update `AGENTS.md` |
+| Skill gap | Invoke `skill-creator` to create/update skill |
 | Friction | Create new skill using `writing-skills` workflow |
-| Knowledge | Save to appropriate memory location (`MEMORY.md`, `memory/`, `USER.md`) |
+| Knowledge | Save to appropriate memory location |
 | Automation | Document skill spec using `skill-creator` |
 
 **Cascade Checking:**
