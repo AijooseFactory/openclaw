@@ -37,8 +37,8 @@ echo "🏗️ [3/4] Rebuilding and Restarting Container..."
 cd "$AJF_WORKSPACE/.a0proj/ajf-openclaw"
 # Ensure UI is built for the container
 cd "$OC_SOURCE"
-yes | pnpm run build
-yes | pnpm run ui:build
+CI=true pnpm run build
+CI=true pnpm run ui:build
 cd "$AJF_WORKSPACE/.a0proj/ajf-openclaw"
 docker rm -f ajf-openclaw || true
 docker compose up -d
