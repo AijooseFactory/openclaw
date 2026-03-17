@@ -21,13 +21,15 @@ echo "✅ OpenClaw source synced."
 
 echo "🗄️ [2/4] Syncing Workspace Data (OpenClaw changes)..."
 cd "$AJF_WORKSPACE"
-git add .a0proj/ajf-openclaw/data
-# Also add any other changes in the workspace if needed
 git add .
 if ! git diff-index --quiet HEAD --; then
+    echo "📝 Committing workspace changes..."
     git commit -m "chore: sync openclaw usage data $(date '+%Y-%m-%d %H:%M:%S')"
+else
+    echo "✨ No workspace changes to commit."
 fi
-git push origin main
+# Force push or standard push to GitHub (AijooseFactory/ai_joose_factory)
+git push origin main || echo "⚠️  Workspace push failed (check credentials/network)."
 echo "✅ Workspace data synced."
 
 echo "🏗️ [3/4] Rebuilding and Restarting Container..."
