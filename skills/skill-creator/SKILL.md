@@ -285,6 +285,24 @@ Files not intended to be loaded into context, but used in output Codex produces.
 - When to include: Files needed in final output
 - Examples: Templates, images, icons, boilerplate code
 
+### tests/ (optional)
+Skill validation tests ensuring the skill functions correctly.
+- When to include: Skills that need automated validation of behavior
+- Examples: Unit tests, integration tests, smoke tests
+- Best practice: Include at minimum smoke tests for core functionality
+
+### evals/ (optional)
+Evaluation criteria and baselines for measuring skill performance.
+- When to include: Skills requiring measurable quality benchmarks
+- Examples: Evaluation prompts, expected outputs, scoring rubrics
+- Best practice: Define clear success criteria and edge cases
+
+### CHANGELOG.md (optional)
+Version history and changes for the skill.
+- When to include: Skills with ongoing maintenance and version tracking
+- Contents: Version numbers, dates, changes, deprecation notices
+- Format: Keep in reverse chronological order (newest first)
+
 ### What NOT to Include in a Skill
 
 A skill should only contain essential files that directly support its functionality. Do NOT create extraneous documentation or auxiliary files, including:
@@ -481,3 +499,244 @@ Match the level of specificity to the task's fragility and variability:
 ### Related Skills
 - `superpowers:writing-skills` - TDD approach to skill creation
 - `superpowers:test-driven-development` - General TDD methodology
+
+## Tool Contract (Conditional)
+
+**This section is Conditional.** Include for skills that use tools.
+
+When a skill uses tools, define a clear contract to ensure reliable operation:
+
+### Required vs Optional Tools
+
+```markdown
+required_tools:
+  - read      # Core file reading capability
+  - write     # Core file writing capability
+
+optional_tools:
+  - exec      # For running validation scripts
+  - browser   # For web-based interactions
+```
+
+### Tool Usage Patterns
+
+Document how tools should be used:
+
+| Tool | Usage Pattern | Failure Handling |
+|------|---------------|------------------|
+| read | Always validate path before reading | Fail closed if path outside skill directory |
+| write | Confirm before overwriting existing files | Request explicit confirmation |
+| exec | Use timeout for long-running commands | Capture output, return partial on timeout |
+
+### Failure Handling for Tool Unavailability
+
+When required tools are unavailable:
+
+1. **Detect**: Check tool availability at skill initialization
+2. **Classify**: Use `tool_unavailable` failure class
+3. **Communicate**: Explain which tool is missing and why it's required
+4. **Suggest**: Provide safe next steps (install tool, use alternative, handoff)
+
+```markdown
+### Tool Unavailable Response
+- Required tool missing: "This skill requires [tool] which is not available. Alternative: [suggestion] or handoff to [skill]."
+- Optional tool missing: Continue without optional functionality, log warning.
+```
+
+## Observability Expansion (Advanced)
+
+**This section is Advanced.** Build upon minimum observability for production-ready skills.
+
+### Structured Logging Formats
+
+For skills requiring detailed logging, use structured format:
+
+```json
+{
+  "timestamp": "2024-01-15T10:30:00Z",
+  "level": "info|warn|error",
+  "skill": "skill-name",
+  "event": "trigger|action|failure",
+  "details": {
+    "action": "file_created",
+    "path": "/path/to/file",
+    "duration_ms": 150
+  }
+}
+```
+
+### Metrics and Tracing Concepts
+
+Key metrics to track:
+
+| Metric | Purpose | Collection |
+|--------|---------|------------|
+| trigger_count | How often skill activates | Every trigger |
+| success_rate | Percentage of successful executions | On completion |
+| execution_time | Time from trigger to completion | On completion |
+| failure_type | Distribution of failure types | On failure |
+
+### Debugging Hooks
+
+Include debugging capabilities for troubleshooting:
+
+- **Verbose mode**: Enable detailed logging via flag
+- **Dry run**: Execute without side effects to test
+- **State inspection**: Expose intermediate state for debugging
+
+### Performance Monitoring Patterns
+
+- Set timeouts for long-running operations
+- Log progress for operations > 5 seconds
+- Track token usage for context-heavy operations
+- Monitor for regression in execution time
+
+## Evaluation Tiering (Advanced)
+
+**This section is Advanced.** Define evaluation tiers for different testing scenarios.
+
+### Tier 0: Smoke Tests (Always Run)
+
+Run on every skill change, even minor fixes.
+
+- Verify skill loads without errors
+- Check trigger contract works
+- Validate basic output format
+
+```
+tests/smoke/
+├── test_loads.yaml      # Skill loads successfully
+├── test_triggers.yaml   # Trigger conditions work
+└── test_output.yaml     # Basic output format valid
+```
+
+### Tier 1: Standard Tests (Run on Changes)
+
+Run when skill content changes.
+
+- Validate all input handling
+- Test output contract compliance
+- Verify safety constraints
+
+```
+tests/
+├── test_inputs.yaml     # All input formats handled
+├── test_outputs.yaml    # Output meets contract
+└── test_safety.yaml     # Safety constraints enforced
+```
+
+### Tier 2: Comprehensive Tests (Pre-Release)
+
+Run before releasing new skill versions.
+
+- Edge case coverage
+- Cross-model compatibility
+- Failure mode verification
+- Performance benchmarks
+
+```
+tests/
+├── test_edge_cases.yaml # Boundary conditions
+├── test_failure.yaml    # All failure paths work correctly
+└── test_performance.yaml # Meets performance targets
+```
+
+### Tier 3: Stress Tests (Periodic)
+
+Run periodically or before major releases.
+
+- High-volume execution
+- Concurrent invocation
+- Long-running stability
+
+```
+tests/stress/
+├── test_volume.yaml     # Handle high request volume
+├── test_concurrency.yaml # Concurrent execution
+└── test_stability.yaml  # Long-running stability
+```
+
+## Model Behavior Profile (Conditional)
+
+**This section is Conditional.** Document model-specific behavior for skills withparticular model requirements.
+
+### Model Assumptions
+
+Document what the skill assumes about the model:
+
+```markdown
+**Assumed capabilities:**
+- Structured output (JSON/YAML)
+- Tool calling with detailed parameters
+- Long context handling (>100k tokens)
+
+**Prompting style:**
+- Works well with explicit step-by-step instructions
+- Follows examples precisely
+```
+
+### Known Model Limitations
+
+Document known limitations to help users:
+
+| Limitation | Workaround |
+|------------|------------|
+| Limited JSON precision | Use string representations for exact numbers |
+| Truncates long inputs | Chunk inputs > 10k words |
+| Inconsistent with dates | Use ISO 8601 format explicitly |
+
+### Alternative Model Behaviors
+
+Document expected behavior variations across models:
+
+```markdown
+**Behavior by model:**
+- **Default model**: Full capability, standard timing
+- **Fast model**: May skip optional validation steps
+- **Vision model**: Can process images in referenced assets
+```
+
+## Version and Compatibility Notes
+
+### Breaking Change Definitions
+
+A breaking change includes:
+
+1. **Structural changes** - SKILL.md schema modifications
+2. **Trigger changes** - Modified use/don't use conditions
+3. **Output changes** - Altered output contract format
+4. **Tool requirement changes** - New required tools added
+5. **Semantic changes** - Changed behavior users depend on
+
+### Migration Guidance
+
+When making backward-incompatible changes:
+
+```markdown
+## Migration from 1.x to 2.0
+
+### What changed
+- Field `description` renamed to `purpose`
+- New required field `risk_level`
+
+### How to migrate
+1. Rename existing `description` field to `purpose`
+2. Add `risk_level: low|medium|high|critical`
+3. Validate with: `scripts/validate_skill.py`
+
+### Compatibility
+- 2.0 skills work with OpenClaw >= 1.0.0
+- 1.x skills continue to work until 3.0.0
+```
+
+### Deprecation Policy
+
+Deprecation timeline:
+
+| Stage | Notice | Action |
+|-------|--------|--------|
+| Announced | Version noted as deprecated | Document replacement |
+| Legacy | Still functional but flagged | Recommend migration |
+| Removed | No longer functional | Remove in next major |
+
+Always maintain deprecated skills for at least one major version cycle.
