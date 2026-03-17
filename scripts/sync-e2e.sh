@@ -19,9 +19,10 @@ git merge upstream/main --no-edit || echo "⚠️  OpenClaw upstream merge had c
 git push origin main
 echo "✅ OpenClaw source synced."
 
-echo "🗄️ [2/4] Syncing Workspace Data (OpenClaw changes)..."
+echo "🗄️ [2/4] Workspace Data Sync (Local Only)..."
+# The repository AijooseFactory/ai_joose_factory does not exist on GitHub.
+# We will still commit locally to track changes in the workspace.
 cd "$AJF_WORKSPACE"
-# Add all changes including untracked files, but excluding submodules if they cause issues
 git add .
 if ! git diff --cached --quiet; then
     echo "📝 Committing workspace changes..."
@@ -29,9 +30,8 @@ if ! git diff --cached --quiet; then
 else
     echo "✨ No workspace changes to commit."
 fi
-# Push to GitHub (AijooseFactory/ai_joose_factory)
-git push origin main || echo "⚠️  Workspace push failed (check credentials/network)."
-echo "✅ Workspace data synced."
+echo "⏭️  Skipping workspace push (GitHub repo not found)."
+echo "✅ Workspace data tracked locally."
 
 echo "🏗️ [3/4] Rebuilding and Restarting Container..."
 cd "$AJF_WORKSPACE/.a0proj/ajf-openclaw"
