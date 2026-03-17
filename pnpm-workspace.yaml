@@ -1,6 +1,6 @@
 packages:
   - .
-  - ui
+  # - ui  # Excluded to work around permission errors with /app/ui/node_modules being owned by root
   - packages/*
   - extensions/*
 
