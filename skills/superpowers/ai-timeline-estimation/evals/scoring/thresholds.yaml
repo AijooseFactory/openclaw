@@ -1,0 +1,47 @@
+# Scoring Thresholds for ai-timeline-estimation
+# Binary pass/fail thresholds for evaluation
+
+trigger_accuracy:
+  pass_threshold: 100
+  min_correct: 10
+  description: "Must fire on all valid requests, not fire on invalid"
+
+output_contract:
+  required_elements:
+    - time_range: true
+    - confidence_level: true
+    - buffer_recommendation: true
+    - verification_cycles: true
+  pass_threshold: 100
+  min_required: 4
+
+estimation_accuracy:
+  complexity_mappings:
+    trivial:
+      min_minutes: 15
+      max_minutes: 30
+    small:
+      min_minutes: 30
+      max_minutes: 120
+    medium:
+      min_minutes: 120
+      max_minutes: 360
+    large:
+      min_minutes: 360
+      max_minutes: 720
+    major:
+      min_hours: 24
+      max_hours: 72
+    epic:
+      min_hours: 72
+      max_hours: 240
+  pass_threshold: 80
+  tolerance_percent: 20
+
+safety_compliance:
+  rules:
+    - verify_multipliers_required
+    - buffer_required
+    - human_time_labeled
+    - ai_time_primary
+  pass_threshold: 100

@@ -1,6 +1,21 @@
 ---
 name: brainstorming
-description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation. Outputs complexity assessment that feeds into ai-timeline-estimation."
+description: "Use when exploring user intent, requirements and design before implementation. Helps turn ideas into fully formed designs through collaborative dialogue, presents multiple approaches, and produces complexity assessments."
+version: 1.1.0
+skill_schema_version: 1
+deprecated: false
+replaced_by: null
+minimum_openclaw_version: "1.0.0"
+supported_models:
+  - general
+preferred_model_traits:
+  - strong reasoning
+  - creativity
+required_tools: []
+optional_tools:
+  - web_search
+  - web_fetch
+risk_level: low
 ---
 
 # Brainstorming Ideas Into Designs
@@ -98,14 +113,14 @@ digraph brainstorming {
 
 - Break the system into smaller units that each have one clear purpose, communicate through well-defined interfaces, and can be understood and tested independently
 - For each unit, you should be able to answer: what does it do, how do you use it, and what does it depend on?
-- Can someone understand what a unit does without reading its internals? Can you change the internals without breaking consumers? If not, the boundaries need work.
-- Smaller, well-bounded units are also easier for you to work with - you reason better about code you can hold in context at once, and your edits are more reliable when files are focused. When a file grows large, that's often a signal that it's doing too much.
+- Can someone understand what a unit does without reading its internals? Can you change the internals without breaking consumers? If not, the boundaries need work
+- Smaller, well-bounded units are also easier for you to work with - you reason better about code you can hold in context at once, and your edits are more reliable when files are focused. When a file grows large, that's often a signal that it's doing too much
 
 **Working in existing codebases:**
 
-- Explore the current structure before proposing changes. Follow existing patterns.
-- Where existing code has problems that affect the work (e.g., a file that's grown too large, unclear boundaries, tangled responsibilities), include targeted improvements as part of the design - the way a good developer improves code they're working in.
-- Don't propose unrelated refactoring. Stay focused on what serves the current goal.
+- Explore the current structure before proposing changes. Follow existing patterns
+- Where existing code has problems that affect the work (e.g., a file that's grown too large, unclear boundaries, tangled responsibilities), include targeted improvements as part of the design - the way a good developer improves code they're working in
+- Don't propose unrelated refactoring. Stay focused on what serves the current goal
 
 ## After the Design
 
@@ -177,3 +192,253 @@ A question about a UI topic is not automatically a visual question. "What does p
 
 If they agree to the companion, read the detailed guide before proceeding:
 `skills/brainstorming/visual-companion.md`
+
+---
+
+## Purpose
+
+The brainstorming skill serves as the front-door to all creative work: creating features, building components, adding functionality, or modifying behavior. It ensures that before any implementation begins, the user's intent is fully understood, requirements are clarified, and a design exists that has been reviewed and approved.
+
+This skill transforms raw ideas into fully formed designs through collaborative dialogue, produces complexity assessments for timeline estimation, and enforces a hard gate that prevents implementation until design approval is obtained.
+
+---
+
+## Trigger Contract
+
+### Use this skill when
+- The user wants to create a new feature, component, or functionality
+- The user asks to "brainstorm" ideas or explore design options
+- The user requests help thinking through or designing something
+- The user mentions building, creating, adding, or implementing something new
+- The user asks about approaches or solutions for a problem
+- Any creative/implementation work is requested
+
+### Do NOT use this skill when
+- The user is asking to fix a bug (use systematic-debugging)
+- The user wants to write tests (use test-driven-development)
+- The user wants to execute an existing plan (use executing-plans)
+- The user wants to request code review (use requesting-code-review)
+- The user asks about git operations, documentation, or administrative tasks
+
+### Inspect First
+- Current project context (files, docs, recent commits)
+- Whether the request involves multiple independent subsystems requiring decomposition
+- User preferences for design doc location
+
+### Handoff To
+- `superpowers:systematic-debugging` for bug fixing
+- `superpowers:test-driven-development` for test creation
+- `superpowers:writing-plans` after design approval
+- `superpowers:subagent-driven-development` if subagent coordination needed
+
+### Stop Conditions
+- User explicitly declines to proceed with design phase
+- Request is unsafe or would create harmful content
+- Missing required context to proceed (refuse to guess)
+
+---
+
+## When Not to Use
+
+### Common Misactivation Scenarios
+
+**Don't use for:**
+- Bug fixes and debugging tasks
+- Refactoring existing code (unless part of new feature design)
+- Writing tests (use TDD skill)
+- Executing existing plans
+- Code review requests
+- Documentation updates
+- Git or administrative tasks
+
+### Alternative Skills
+
+| Request | Use Instead |
+|---------|-------------|
+| "Fix this bug" | systematic-debugging |
+| "Write tests" | test-driven-development |
+| "Execute plan" | executing-plans |
+| "Refactor this" | systematic-debugging or specific refactor guidance |
+| "Review code" | requesting-code-review |
+| "Check status" | No skill needed - just execute |
+
+---
+
+## Inputs
+
+### Required Inputs
+- User request for new feature/functionality/design exploration
+- Project context (can be explored during skill execution)
+
+### Optional Inputs
+- User preferences for design doc location
+- Existing constraints or requirements
+- Budget/timeline concerns
+- Technical stack preferences
+
+### Input Formats
+- Natural language description of what user wants to build
+- Open-ended exploration of user needs
+- Clarifying questions answered by user
+
+---
+
+## Output Contract
+
+### Output Mode
+- Interactive dialogue (questions, proposals, design sections)
+- File artifact: Design document at `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`
+- Skill invocation: writing-plans after approval
+
+### Required Fields
+- Design sections with incremental approval requests
+- 2-3 approaches with trade-offs and recommendation
+- Complexity assessment table
+- Architecture and component breakdown
+- Data flow and error handling considerations
+
+### Output Guarantees
+| Guarantee | Required Artifact |
+|-----------|-------------------|
+| Design approval | User approves each design section before proceeding |
+| Documented spec | Design written to file before spec review |
+| Spec review | Spec review subagent invoked before user review |
+| Skill transition | Only writing-plans invoked after completion |
+
+### Validation Rules
+- Must request user approval before proceeding to implementation
+- Must propose multiple approaches (minimum 2)
+- Must write design document before spec review
+- Must invoke spec review subagent (max 5 iterations)
+- Must get user sign-off on written spec
+- Must invoke writing-plans as final action
+
+### Failure Output
+If unable to proceed:
+- Explain what information is missing
+- Request clarification on ambiguous points
+- Suggest alternative skill ifrequest is out of scope
+- Never proceed to implementation without design approval
+
+---
+
+## Risk and Safety Boundaries
+
+### Risk Level
+**low** — This skill only produces design documents and does not execute any implementation or destructive operations
+
+### Trust Boundaries
+
+| Boundary | Trust Level | Notes |
+|----------|-------------|-------|
+| User input | Untrusted | Validate scope, clarify before proceeding |
+| Design decisions | User-owned | User approval required at each step |
+| File writes | Constrained | Only writes to docs/superpowers/specs/ |
+| Git commits | User-approved | Only commits design doc after explicit approval |
+| Skill invocations | Strict | Only invokes writing-plans, no other implementation |
+
+### Primary Risks
+
+| Risk | Mitigation |
+|------|------------|
+| Premature implementation | Hard gate enforced - no code written before approval |
+| Scope creep | Assess scope first, decompose if needed |
+| Misunderstanding requirements | Ask questions one at a time, validate understanding |
+| User bypass | Explicit approval required for each section |
+
+### Basic Safety Rules
+1. Never write any code or implementation during brainstorming
+2. Never invoke implementation skills (frontend-design, mcp-builder, etc.)
+3. Always get explicit user approval before moving to next phase
+4. If user requests implementation without design, remind of hard gate
+
+---
+
+## Failure Taxonomy
+
+### Standard Failure Classes
+
+| Class | Description | Resolution |
+|-------|-------------|------------|
+| missing_input | User request too vague or incomplete | Ask clarifying questions one at a time |
+| ambiguous_trigger | Request could mean multiple things | Clarify whether they want design exploration |
+| unsupported_request | Request for bug fixing, testing, etc. | Handoff to appropriate skill |
+| scope_too_large | Project requires decomposition | Help decompose into sub-projects |
+| user_abort | User declines to continue design | Acknowledge, stop, no implementation |
+
+### Expected Failure Behavior
+- Ask clarifying questions until intent is clear
+- Detect when project needs decomposition and suggest it
+- Refuse to proceed if asked for implementation without design
+- Properly classify and communicate failures
+
+### Minimum Failure Handling
+- **missing_input**: Ask one focused clarifying question
+- **ambiguous_trigger**: Offer to clarify scope and intent
+- **unsupported_request**: Suggest correct skill with explanation
+- **scope_too_large**: Propose decomposition into sub-projects
+
+---
+
+## Minimal Context Rules
+
+### Core Required Context
+
+| Information | Source | Required |
+|-------------|--------|----------|
+| Skill name and purpose | Frontmatter | Yes |
+| Hard gate constraint | SKILL.md body | Yes |
+| Process flow | Process Flow diagram | Yes |
+| Approval requirements | When Not to Use section | Yes |
+
+### Context Principle
+Keep core context minimal. The skill involves interactive dialogue, so context is built incrementally through questions.
+
+### Always Load
+- Frontmatter (name, description)
+- Hard gate instruction
+- Process checklist
+- Key principles
+
+### Load On Demand
+- Visual companion guide (if user accepts)
+- Spec document reviewer prompt
+- Complexity assessment table
+
+---
+
+## Minimum Observability
+
+### Required Logging
+
+| Event | Description |
+|-------|-------------|
+| **Trigger** | When brainstorming skill activates |
+| **Question** | Each clarifying question asked |
+| **Proposal** | Approaches presented to user |
+| **Approval** | Design section approvals |
+| **Document** | Design doc written and committed |
+| **Spec Review** | Spec review invocation and result |
+| **Transition** | Writing-plans skill invoked |
+| **Failure** | Any failure with classification |
+
+### Logging Format
+Simple text logs or optional structured format. Key events tracked for session review.
+
+---
+
+## Version Metadata
+
+| Field | Value | Purpose |
+|-------|-------|---------|
+| version | 1.1.0 | Current skill version |
+| skill_schema_version | 1 | Schema version for compatibility |
+| deprecated | false | Not deprecated |
+| replaced_by | null | No replacement |
+| minimum_openclaw_version | 1.0.0 | Minimum required version |
+
+### Versioning Rules
+- Use semantic versioning
+- Increment PATCH for bug fixes
+- Increment MINOR for new features
+- Increment MAJOR for breaking changes

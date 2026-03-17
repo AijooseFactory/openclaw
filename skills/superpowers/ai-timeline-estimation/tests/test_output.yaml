@@ -1,0 +1,59 @@
+# Output Contract Tests for ai-timeline-estimation
+# Tests that verify the skill produces correct output format
+
+output_tests:
+  - name: contains_time_range
+    description: "Estimates should be presented as ranges, not single points"
+    check: |
+      Output contains a time range (e.g., "4-6 hours", "2-3 days")
+    expected: true
+
+  - name: includes_confidence_level
+    description: "Estimates should include confidence level"
+    check: |
+      Output includes "Confidence:" with High/Medium/Low
+    expected: true
+
+  - name: ai_time_units
+    description: "Estimates should be in AI execution time units"
+    check: |
+      Output uses hours/days (AI time), not weeks/months as primary
+    expected: true
+
+  - name: verification_multiplier
+    description: "Estimates should include verification multiplier"
+    check: |
+      Output applies verification multiplier (1.2x-1.6x based on task type)
+    expected: true
+
+  - name: buffer_recommendation
+    description: "Estimates should include buffer recommendation"
+    check: |
+      Output includes buffer percentage based on confidence
+    expected: true
+
+  - name: human_comparison_labeled
+    description: "Human timelines must be explicitly labeled as comparison only"
+    check: |
+      If human time is provided, it includes "comparison only" or "NOTE"
+    expected: true
+
+  - name: base_overhead_formula
+    description: "Complex tasks should reference base + overhead formula"
+    check: |
+      For medium+ complexity, formula components are addressed
+    expected: true
+
+# Failure output tests
+failure_tests:
+  - name: missing_task_description
+    description: "When no task provided, should request clarification"
+    input: ""
+    expected_behavior: |
+      Should indicate task description is required
+
+  - name: ambiguous_scope_handling
+    description: "Ambiguous tasks should request more details"
+    input: "How long will this take?"
+    expected_behavior: |
+      Should ask for task specifics or provide range with low confidence

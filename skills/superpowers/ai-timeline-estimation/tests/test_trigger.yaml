@@ -1,0 +1,67 @@
+# Trigger Accuracy Tests for ai-timeline-estimation
+# Tests that verify the skill triggers correctly on valid requests
+
+trigger_tests:
+  # Should trigger - timeline estimation requests
+  - input: "How long will this task take for an AI to complete?"
+    should_fire: true
+    reason: "Direct timeline estimation request"
+
+  - input: "I need to estimate how long the AI will take to implement this feature"
+    should_fire: true
+    reason: "AI execution time estimation request"
+
+  - input: "Give me a timeline estimate for this work that AI will do"
+    should_fire: true
+    reason: "Timeline estimation with AI context"
+
+  - input: "How long will it take for an AI agent to fix this bug?"
+    should_fire: true
+    reason: "Task-specific AI timeline request"
+
+  - input: "Convert this human estimate to AI time"
+    should_fire: true
+    reason: "Human to AI time conversion request"
+
+  - input: "Can you estimate how long AI will need for this?"
+    should_fire: true
+    reason: "AI time estimation query"
+
+  # Should NOT trigger - non-estimation requests
+  - input: "Write a function that adds two numbers"
+    should_fire: false
+    reason: "Code writing request, not estimation"
+
+  - input: "Debug this error in my code"
+    should_fire: false
+    reason: "Debugging request, use systematic-debugging"
+
+  - input: "What is the speed of light?"
+    should_fire: false
+    reason: "General knowledge question"
+
+  - input: "How long does a human take to paint a wall?"
+    should_fire: false
+    reason: "Human-only timeline, not AI"
+
+  - input: "Create a test file for my API"
+    should_fire: false
+    reason: "Test creation request"
+
+  - input: "What's your name?"
+    should_fire: false
+    reason: "General conversation"
+
+# Edge case tests
+edge_case_tests:
+  - input: "estimate timeline for AI execution"
+    should_fire: true
+    reason: "Lowercase trigger phrase"
+
+  - input: "I need an estimate"
+    should_fire: false
+    reason: "No AI context provided"
+
+  - input: "How long will this take? I mean for a human"
+    should_fire: false
+    reason: "Explicitly human timeline only"

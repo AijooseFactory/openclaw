@@ -1,0 +1,51 @@
+# Baseline Evaluation Prompts for ai-timeline-estimation
+# Used for baseline vs challenger evaluation
+
+baseline_prompts:
+  # Trigger accuracy evaluation
+  trigger_evaluation:
+    - prompt: "User says: 'How long will an AI take to implement a REST API endpoint?'"
+      expected_fire: true
+
+    - prompt: "User says: 'How long does it take to bake a cake?'"
+      expected_fire: false
+
+    - prompt: "User says: 'I need to estimate how long our AI agent will spend on testing'"
+      expected_fire: true
+
+    - prompt: "User says: 'Give me an estimate for a human developer'"
+      expected_fire: false
+
+  # Output format evaluation
+  output_evaluation:
+    - prompt: "User asks for timeline to implement a CRUD API"
+      required_elements:
+        - "time range"
+        - "confidence"
+        - "verification"
+        - "buffer"
+
+    - prompt: "User asks for timeline to fix a security vulnerability"
+      required_elements:
+        - "time range"
+        - "confidence"
+        - "security multiplier"
+        - "verification"
+
+  # Complexity assessment
+  complexity_evaluation:
+    - task: "Fix a typo in a README"
+      expected_complexity: "trivial"
+      expected_range: "15-30 min"
+
+    - task: "Implement a single function with unit tests"
+      expected_complexity: "small"
+      expected_range: "30 min - 2 hours"
+
+    - task: "Implement a microservice with 5 endpoints"
+      expected_complexity: "medium"
+      expected_range: "3-8 hours"
+
+    - task: "Full system migration to new framework"
+      expected_complexity: "epic"
+      expected_range: "3-10 days"
