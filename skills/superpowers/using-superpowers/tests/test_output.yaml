@@ -1,0 +1,64 @@
+# Output Tests for using-superpowers skill
+# Tests that verify correct output behavior
+
+output_tests:
+  - name: announces_skill_usage
+    description: When a skill is invoked, should announce usage
+    check: |
+      When invoking a skill, must announce in format:
+      "Using [skill] to [purpose]"
+    expected_format: "Using [skill-name] to [purpose]"
+
+  - name: creates_todos_for_checklist
+    description: When skill has checklist, should create todos
+    check: |
+      For each item in skill checklist, create TodoWrite entry
+    expected_behavior: "One TodoWrite per checklist item"
+
+  - name: user_instructions_override
+    description: User instructions always take precedence
+    check: |
+      If CLAUDE.md says don't use TDD and skill says use TDD,
+      follow user's instructions
+    expected_behavior: "User instructions = highest priority"
+
+  - name: pre_response_invocation
+    description: Skills invoked BEFORE any response or action
+    check: |
+      Even for "simple" questions, check skills first
+      if 1% chance applies, invoke the skill
+    expected_behavior: "Skill check precedes all responses"
+
+# Failure handling tests
+failure_tests:
+  - name: skill_tool_fails
+    description: If Skill tool unavailable, continue with warning
+    scenario: "Skill tool invocation fails"
+    expected_behavior: "Log warning, continue task, don't block"
+
+  - name: no_applicable_skill
+    description: When no skills match, proceed normally
+    scenario: "No skills in <available_skills> match request"
+    expected_behavior: "Continue with default behavior"
+
+  - name: multiple_skills_match
+    description: When multiple skills match, use priority order
+    scenario: "Both process and implementation skills could apply"
+    expected_behavior: "Process skills first, then implementation"
+
+# Behavioral tests
+behavior_tests:
+  - name: one_percent_rule
+    description: Even 1% chance of skill applicability triggers check
+    scenario: "Not sure if skill applies"
+    expected_behavior: "Err on side of invoking skill"
+
+  - name: no_penalty_for_wrong_skill
+    description: No penalty for invoking but not using a skill
+    scenario: "Invoked skill but it's wrong for situation"
+    expected_behavior: "Just don't use it after checking"
+
+  - name: subagent_context_skip
+    description: Subagent sessions skip this skill check
+    scenario: "Dispatched as subagent with specific task"
+    expected_behavior: "Skip skill check, proceed with task"

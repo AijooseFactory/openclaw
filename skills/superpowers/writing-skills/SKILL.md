@@ -1,15 +1,30 @@
 ---
 name: writing-skills
 description: Use when creating new skills, editing existing skills, or verifying skills work before deployment. Skill creation has predictable phases - use ai-timeline-estimation for documentation time.
+version: 1.1.0
+skill_schema_version: 1
+deprecated: false
+replaced_by: null
+minimum_openclaw_version: "1.0.0"
+supported_models:
+  - general
+preferred_model_traits:
+  - strong writing
+  - skill design
+required_tools: []
+optional_tools:
+  - read
+  - write
+risk_level: low
 ---
 
 # Writing Skills
 
-## Overview
+## Purpose
 
 **Writing skills IS Test-Driven Development applied to process documentation.**
 
-**Personal skills live in agent-specific directories (`~/.claude/skills` for Claude Code, `~/.agents/skills/` for Codex)** 
+**Personal skills live in agent-specific directories (`~/.claude/skills` for Claude Code, `~/.agents/skills/` for Codex)**
 
 You write test cases (pressure scenarios with subagents), watch them fail (baseline behavior), write the skill (documentation), watch tests pass (agents comply), and refactor (close loopholes).
 
@@ -26,6 +41,17 @@ A **skill** is a reference guide for proven techniques, patterns, or tools. Skil
 **Skills are:** Reusable techniques, patterns, tools, reference guides
 
 **Skills are NOT:** Narratives about how you solved a problem once
+
+### Skill Types
+
+#### Technique
+Concrete method with steps to follow (condition-based-waiting, root-cause-tracing)
+
+#### Pattern
+Way of thinking about problems (flatten-with-flags, test-invariants)
+
+#### Reference
+API docs, syntax guides, tool documentation (office docs)
 
 ## TDD Mapping for Skills
 
@@ -44,7 +70,40 @@ A **skill** is a reference guide for proven techniques, patterns, or tools. Skil
 
 The entire skill creation process follows RED-GREEN-REFACTOR.
 
-## When to Create a Skill
+## Trigger Contract
+
+### Use this skill when
+- The user asks to create a new skill from scratch
+- The user asks to improve, edit, or verify an existing skill
+- The user wants to test skills before deployment
+- The user needs to follow TDD methodology for skill creation
+- The request involves skill structure, SKILL.md formatting, or skill validation
+- The user says "create a skill", "write a skill", "improve this skill", "verify skill works"
+
+### Do NOT use this skill when
+- The user is asking for one-off documentation that won't be reused
+- The user wants to create documentation that is not a skill (use documentation skill)
+- The task is about configuring existing software (use appropriate configuration skill)
+- The user is asking directly about TDD methodology (use superpowers:test-driven-development)
+
+### Inspect First
+- Existing skill directory structure (if improving)
+- Current SKILL.md format and sections
+- Skill creation checklist requirements
+- Testing methodology documentation
+
+### Handoff To
+- `superpowers:test-driven-development` for fundamental TDD methodology
+- `skill-creator` for complete skill authoring with all v2.4.0 guarantees
+
+### Stop Conditions
+- User wants skill without following TDD methodology (violates core principle)
+- Unsafe request that would create harmful documentation
+- Request conflicts with OpenClaw skill policies
+
+## When Not to Use
+
+### When to Create a Skill
 
 **Create when:**
 - Technique wasn't intuitively obvious to you
@@ -58,19 +117,196 @@ The entire skill creation process follows RED-GREEN-REFACTOR.
 - Project-specific conventions (put in CLAUDE.md)
 - Mechanical constraints (if it's enforceable with regex/validation, automate it—save documentation for judgment calls)
 
-## Skill Types
+### Common Misactivation Scenarios
 
-### Technique
-Concrete method with steps to follow (condition-based-waiting, root-cause-tracing)
+**Don't use for:**
+- One-off solutions that won't be reused
+- Standard practices well-documented elsewhere (link instead)
+- Project-specific conventions (put in project CLAUDE.md)
+- Mechanical constraints that can be automated (regex, validation)
+- Direct domain problem solving (use domain-specific skill)
 
-### Pattern
-Way of thinking about problems (flatten-with-flags, test-invariants)
+### Alternative Skills
 
-### Reference
-API docs, syntax guides, tool documentation (office docs)
+| Request | Use Instead |
+|---------|-------------|
+| "Write documentation" | Documentation skill |
+| "Explain TDD methodology" | Test-driven development |
+| "Configure this tool" | Tool-specific skill |
 
-## Directory Structure
+## Inputs
 
+### Required Inputs
+- Skill intent (what the skill should do)
+- Understanding of TDD methodology
+- Use cases or examples of how the skill will be triggered
+
+### Optional Inputs
+- Existing skill to improve (path or content)
+- Domain-specific requirements
+- Preferred directory structure
+- Testing approach preferences
+
+### Input Formats
+- Natural language description
+- Draft skill content (markdown)
+- Example requests and expected behaviors
+- Reference skills or patterns to follow
+
+## Output Contract
+
+### Output Mode
+- File artifact (skill directory)
+- Validation summary
+- Test results report
+
+### Required Fields
+- skill name (valid identifier)
+- purpose (clear description)
+- trigger contract (use/don't use)
+- output contract
+- risk level (low/medium/high/critical)
+
+### Output Guarantees
+
+Every skill produced via this methodology SHOULD satisfy the AgentSkills quality guarantees:
+
+| Guarantee | Required Artifact |
+|-----------|-------------------|
+| Tool Quality | Explicit schema, single responsibility, predictable outputs |
+| Evaluation | baseline/challenger evals in `evals/` directory |
+| Approval and Safety | Risk/Safety Boundaries with action classification |
+| Context Efficiency | Minimal Context Rules, deferred loading support |
+| Governance | CHANGELOG.md, version in frontmatter |
+
+### Validation Rules
+- frontmatter must parse as valid YAML
+- name field must be valid skill identifier (lowercase, hyphens)
+- description must start with "Use when" or "Use for"
+- Skill creation checklist completed
+
+### Failure Output
+Return a concise blocked status with:
+- reason (specific validation error)
+- missing inputs (what's needed)
+- safe next step (how to fix)
+
+## Risk and Safety Boundaries
+
+### Risk Level
+**low** - Skills create documentation, no destructive operations
+
+### Trust Boundaries
+
+| Boundary | Trust Level | Notes |
+|----------|-------------|-------|
+| User input | Untrusted | Validate skill names, sanitize descriptions |
+| Workspace files | Trusted within skill directory | Only create files in designated skill path |
+| External URLs | Untrusted | Never fetch URLs during skill creation |
+| Third-party content | Untrusted | Don't include external content without validation |
+| Tool results | Trusted | Validation scripts are trusted |
+
+### Primary Risks
+
+| Risk | Mitigation |
+|------|------------|
+| Path traversal | Validate skill paths stay within designated directory |
+| Unsafe file operations | Fail closed on unresolved references |
+| Prompt injection | Description field validated for malicious patterns |
+
+### Basic Safety Rules
+1. Only create files in designated skill paths
+2. Validate all inputs before processing
+3. Fail closed on ambiguous or unsafe inputs
+4. Never overwrite without confirmation
+5. Follow TDD methodology - no skill without failing test first
+
+## Failure Taxonomy
+
+### Standard Failure Classes
+
+| Class | Description | Resolution |
+|-------|-------------|------------|
+| missing_input | Required input not provided | Request missing input from user |
+| ambiguous_trigger | Trigger description unclear | Clarify triggering conditions |
+| unsupported_request | Request outside skill scope | Handoff to appropriate skill |
+| permission_denied | Cannot write to target path | Request different path or permissions |
+| tool_unavailable | Validation scripts not found | Check skill installation |
+| validation_failure | Skill fails validation | Fix specific validation errors |
+| safety_block | Request would create harmful content | Reject with explanation |
+| violated_tdd_iron_law | Skill written without failing test first | Delete and start over with baseline test |
+
+### Expected Failure Behavior
+
+Every skill creation should:
+1. Classify the failure using standard taxonomy
+2. Explain the specific blocker in user-friendly terms
+3. Return the safest next step
+4. Never pretend to succeed
+
+### Minimum Failure Handling
+- **missing_input**: Request missing input with example format
+- **ambiguous_trigger**: Ask clarifying question with options
+- **unsupported_request**: Suggest appropriate skill to handoff
+- **safety_block**: Explain violation, provide safe alternative
+- **violated_tdd_iron_law**: Delete code, start over with RED phase
+
+## Minimal Context Rules
+
+### Core Required Context
+
+Before using this skill, the following must be known:
+
+| Information | Source | Required |
+|-------------|--------|----------|
+| Skill name and description | Frontmatter | Yes |
+| When to use / not use | Trigger Contract section | Yes |
+| TDD methodology fundamentals | test-driven-development skill | Yes |
+| Expected outputs | Output Contract section | Yes |
+
+### Context Principle
+
+Keep core context minimal (under 500 words for skill overview). Anything detailed or situational belongs in:
+- Reference files (for testing methodology, examples)
+- Supporting files (for reusable tools)
+- SKILL.md sections for specific patterns
+
+## Minimum Observability
+
+### Required Logging
+
+Every skill creation should log the following:
+
+| Event | Description |
+|-------|-------------|
+| **Trigger** | When the skill is activated (initialization) |
+| **Action** | The primary action taken (baseline test, skill write, verification) |
+| **Failure** | Any error or failure condition that occurs |
+
+### Logging Format
+
+Logging format is **optional**. Skills may use:
+- Simple text logs
+- Structured JSON format
+- Framework-native logging
+
+## Version Metadata
+
+| Field | Required | Purpose |
+|-------|----------|---------|
+| version | Yes | Semantic version (MAJOR.MINOR.PATCH) |
+| deprecated | Yes | Whether this version is deprecated |
+| replaced_by | Yes (if deprecated) | Name of replacement skill |
+
+### Versioning Rules
+- Use semantic versioning
+- Increment PATCH for safe internal fixes
+- Increment MINOR for backward-compatible enhancements
+- Increment MAJOR for breaking structural changes
+
+---
+
+## Directory Structure (Existing Skill Structure)
 
 ```
 skills/
@@ -135,7 +371,6 @@ What goes wrong + fixes
 ## Real-World Impact (optional)
 Concrete results
 ```
-
 
 ## Claude Search Optimization (CSO)
 
@@ -275,7 +510,7 @@ wc -w skills/path/SKILL.md
 - `creating-skills`, `testing-skills`, `debugging-with-logs`
 - Active, describes the action you're taking
 
-### 4. Cross-Referencing Other Skills
+### Cross-Referencing Other Skills
 
 **When writing documentation that references other skills:**
 

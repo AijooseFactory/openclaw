@@ -1,0 +1,59 @@
+# Baseline Evaluation Prompts for writing-skills
+# Used to evaluate skill performance against expected behavior
+
+baseline_prompts:
+  - name: create_skill_without_testing
+    description: Verify agent tries to create skill without following TDD (baseline failure)
+    prompt: |
+      Create a skill for handling file uploads. Just write the SKILL.md file.
+    expected_behavior: |
+      Agent should write SKILL.md without running baseline test first.
+      This is the baseline (incorrect) behavior that the skill should prevent.
+    failure_indicator: |
+      Agent creates skill file without demonstrating TDD methodology
+
+  - name: create_skill_with_tdd
+    description: Verify agent follows TDD after skill is loaded (target behavior)
+    prompt: |
+      Create a skill for handling file uploads using TDD methodology.
+    context: |
+      [Skill loaded: writing-skills]
+    expected_behavior: |
+      Agent should:
+      1. Run baseline test (RED) - show agent fails without skill
+      2. Write skill addressing failures (GREEN)
+      3. Close loopholes (REFACTOR)
+    success_indicator: |
+      Agent documents baseline behavior before writing skill
+
+  - name: skill_quality_verification
+    description: Verify agent checks skill quality standards
+    prompt: |
+      Create a skill for logging, then verify it meets quality standards.
+    expected_behavior: |
+      Agent should check:
+      - Tool Quality (single responsibility, explicit schema)
+      - Evaluation (trigger accuracy)
+      - Context Efficiency
+      - Governance (CHANGELOG, version)
+
+  - name: violate_iron_law
+    description: Verify skill prevents violating TDD Iron Law
+    prompt: |
+      I want to quickly add a new section to the debugging skill.
+      Just edit the file directly.
+    expected_behavior: |
+      Agent should refuse, citing Iron Law violations.
+      Should require baseline test before editing.
+
+  - name: skill_with_proper_structure
+    description: Verify agent creates proper skill structure
+    prompt: |
+      Create a skill called "defensive-programming" for writing defensive code.
+    expected_behavior: |
+      Agent creates:
+      - Proper frontmatter (name, description with "Use when")
+      - Purpose section
+      - Trigger Contract
+      - Example code
+      - Quick reference

@@ -1,0 +1,54 @@
+# Output Tests for writing-skills
+# Verifies skill produces valid output matching contract
+
+output_tests:
+  - name: valid_skill_name
+    description: Skill name should be valid identifier
+    validation:
+      type: regex
+      pattern: "^[a-z][a-z0-9-]*$"
+
+  - name: description_format
+    description: Description should start with "Use when"
+    validation:
+      type: starts_with
+      prefix: "Use when"
+
+  - name: frontmatter_parses
+    description: Frontmatter should be valid YAML
+    validation:
+      type: yaml_valid
+
+  - name: has_purpose_section
+    description: SKILL.md should have Purpose section
+    validation:
+      type: section_exists
+      section: "Purpose"
+
+  - name: has_trigger_contract
+    description: SKILL.md should have Trigger Contract section
+    validation:
+      type: section_exists
+      section: "Trigger Contract"
+
+  - name: has_tdd_methodology
+    description: Should follow TDD methodology (RED-GREEN-REFACTOR)
+    validation:
+      type: contains_all
+      terms:
+        - "RED"
+        - "GREEN"
+        - "REFACTOR"
+        - "failing test"
+
+  - name: has_skill_quality_standards
+    description: Should reference skill quality standards
+    validation:
+      type: contains
+      term: "Skill Quality Standards"
+
+  - name: has_testing_section
+    description: Should have testing/baseline verification
+    validation:
+      type: contains
+      term: "baseline"

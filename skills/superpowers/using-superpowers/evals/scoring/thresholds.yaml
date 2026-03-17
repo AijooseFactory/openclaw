@@ -1,0 +1,59 @@
+# Scoring Thresholds for using-superpowers skill evaluation
+# Binary pass/fail criteria for automatic evaluation
+
+trigger_thresholds:
+  should_fire_accuracy:
+    description: "Percentage of correct should_fire decisions"
+    pass_threshold: 100
+    fail_threshold: 100
+    # Must get 100% - any incorrect trigger is problematic
+
+  should_not_fire_accuracy:
+    description: "Percentage of correct should_not_fire decisions"
+    pass_threshold: 100
+    fail_threshold: 100
+    # Must get 100% - false negatives on not-firing are problematic
+
+output_thresholds:
+  announcement_format:
+    description: "Correct announcement format used"
+    pass_threshold: 100
+    fail_threshold: 100
+
+  user_instructions_precedence:
+    description: "User instructions recognized as highest priority"
+    pass_threshold: 100
+    fail_threshold: 100
+
+  priority_ordering:
+    description: "Process skills invoked before implementation skills"
+    pass_threshold: 100
+    fail_threshold: 100
+
+failure_handling_thresholds:
+  continue_on_tool_failure:
+    description: "Continues task when skill tool fails"
+    pass_threshold: 100
+    fail_threshold: 100
+
+  no_blocking_on_error:
+    description: "Does not block user response on skill errors"
+    pass_threshold: 100
+    fail_threshold: 100
+
+context_evaluation_thresholds:
+  pre_response_check:
+    description: "Skills checked before any response"
+    pass_threshold: 100
+    fail_threshold: 100
+
+  conservative_invocation:
+    description: "Invokes skill if any doubt (1% rule)"
+    pass_threshold: 100
+    fail_threshold: 100
+
+# Overall score calculation
+scoring:
+  total_criteria: 10
+  pass_required: 10
+  pass_percentage: 100

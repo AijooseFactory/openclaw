@@ -1,0 +1,72 @@
+# Baseline Evaluation Prompts for using-superpowers skill
+
+evaluation_prompts:
+  trigger_evaluation:
+    - name: new_task_request
+      prompt: |
+        Evaluate whether using-superpowers skill should trigger.
+        User says: "Create a new PDF processing skill"
+        Context: Main agent session, new request.
+        Should trigger: true
+
+    - name: subagent_context
+      prompt: |
+        Evaluate whether using-superpowers skill should trigger.
+        Context: [Subagent] You are being dispatched to write tests for the auth module.
+        Should trigger: false
+        Reason: Subagent already has focused task
+
+    - name: conversational_only
+      prompt: |
+        Evaluate whether using-superpowers skill should trigger.
+        User says: "That's interesting, tell me more"
+        Should trigger: false
+        Reason: No actionable task
+
+    - name: unclear_but_task
+      prompt: |
+        Evaluate whether using-superpowers skill should trigger.
+        User says: "Can you help me with something?"
+        Should trigger: true
+        Reason: Implicitly a task request, check skills conservatively
+
+  output_evaluation:
+    - name: announces_skill_usage
+      prompt: |
+        When skill invokes another skill, what format should be used to announce?
+        Expected: "Using [skill-name] to [purpose]"
+
+    - name: priority_order
+      prompt: |
+        When both brainstorming and implementation skills could apply,
+        which should be invoked first?
+        Expected: Process skills (brainstorming) first
+
+    - name: user_instructions_precedence
+      prompt: |
+        If AGENTS.md says "never use TDD" and a skill says "always use TDD",
+        which takes precedence?
+        Expected: User instructions always win
+
+  failure_evaluation:
+    - name: skill_tool_failure
+      prompt: |
+        What should happen if Skill tool invocation fails?
+        Expected: Log warning, continue with task, don't block
+
+    - name: multiple_skill_matches
+      prompt: |
+        When multiple skills could apply, what's the priority order?
+        Expected: Process -> Implementation -> Estimation
+
+  context_evaluation:
+    - name: pre_response_check
+      prompt: |
+        When should skill check happen relative to responding?
+        Expected: Before ANY response or action
+
+    - name: one_percent_rule
+      prompt: |
+        How should you handle a situation where you're not sure
+        if a skill applies?
+        Expected: Invoke if even 1% chance

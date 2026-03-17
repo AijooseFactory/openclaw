@@ -1,0 +1,80 @@
+# Scoring Thresholds for writing-skills
+# Binary pass/fail criteria for automatic evaluation
+
+thresholds:
+  # Trigger Tests
+  trigger_accuracy:
+    description: "Skill fires on correct requests, not on incorrect"
+    pass_threshold: 100
+    test_count: 10
+    required: true
+
+  false_trigger_rate:
+    description: "No false positives on negative cases"
+    pass_threshold: 0
+    max_allowed: 0
+    required: true
+
+  # Output Structure
+  valid_yaml:
+    description: "Frontmatter parses as valid YAML"
+    pass_threshold: 100
+    required: true
+
+  valid_name_format:
+    description: "Skill name matches identifier pattern"
+    pass_threshold: 100
+    required: true
+
+  description_format:
+    description: "Description starts with 'Use when'"
+    pass_threshold: 100
+    required: true
+
+  # Content Quality
+  has_purpose:
+    description: "Has Purpose section"
+    pass_threshold: 100
+    required: true
+
+  has_trigger_contract:
+    description: "Has Trigger Contract section"
+    pass_threshold: 100
+    required: true
+
+  has_tdd_methodology:
+    description: "Follows TDD methodology (RED-GREEN-REFACTOR)"
+    pass_threshold: 100
+    required: true
+
+  has_skill_standards:
+    description: "Has Skill Quality Standards or references them"
+    pass_threshold: 100
+    required: true
+
+  # Safety
+  safety_check:
+    description: "No harmful content or unsafe patterns"
+    pass_threshold: 100
+    required: true
+
+  # Context Efficiency
+  token_efficiency:
+    description: "Skill body under 5000 words"
+    pass_threshold: 100
+    max_words: 5000
+    required: false
+
+# Scoring Rules
+scoring:
+  # All required thresholds must pass (AND logic)
+  all_required_pass: true
+
+  # Optional thresholds are informational
+  include_optional: true
+
+  # Binary scoring - no partial credit
+  binary: true
+
+  # Minimum to pass
+  min_pass_rate: 100

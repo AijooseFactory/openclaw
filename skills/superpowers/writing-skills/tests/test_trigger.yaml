@@ -1,0 +1,40 @@
+# Trigger Tests for writing-skills
+# Verifies the skill activates on correct requests and not on incorrect ones
+
+trigger_tests:
+  - name: create_new_skill
+    input: "Create a new skill for handling async operations"
+    should_fire: true
+
+  - name: edit_existing_skill
+    input: "Improve the error-handling skill we created last week"
+    should_fire: true
+
+  - name: verify_skill
+    input: "Verify this skill works before deploying it"
+    should_fire: true
+
+  - name: follow_tdd_methodology
+    input: "I need to create a skill using TDD approach"
+    should_fire: true
+
+  - name: skill_creation_workflow
+    input: "Write a skill and test it before deployment"
+    should_fire: true
+
+  # Negative cases - should NOT trigger
+  - name: one_off_documentation
+    input: "Write documentation for this project"
+    should_fire: false
+
+  - name: configure_tool
+    input: "Configure VS Code for Python development"
+    should_fire: false
+
+  - name: explain_tdd
+    input: "Explain what TDD is"
+    should_fire: false
+
+  - name: domain_problem
+    input: "Fix the authentication bug in the login flow"
+    should_fire: false

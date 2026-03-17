@@ -1,0 +1,62 @@
+# Trigger Tests for using-superpowers skill
+# Tests that verify the skill activates on correct inputs
+
+trigger_tests:
+  # Should fire - new task/request
+  - input: "Create a new skill for handling API requests"
+    should_fire: true
+    reason: "User is requesting a task that could benefit from skill creation"
+
+  - input: "Help me fix this bug in the authentication flow"
+    should_fire: true
+    reason: "Task request that may benefit from debugging skill"
+
+  - input: "Write documentation for our API"
+    should_fire: true
+    reason: "Task that may use documentation skill"
+
+  - input: "How do I configure the firewall?"
+    should_fire: true
+    reason: "Task request that could use config/hc skill"
+
+  # Should NOT fire - subagent context
+  - input: "[Subagent] Run the test suite and report results"
+    should_fire: false
+    reason: "Subagent dispatch - already has focused context"
+
+  # Should NOT fire - purely conversational
+  - input: "Hello! How are you today?"
+    should_fire: false
+    reason: "Pure conversational message with no task"
+
+  - input: "Thanks for your help earlier"
+    should_fire: false
+    reason: "Social message, no actionable task"
+
+# Edge cases
+edge_cases:
+  - input: "Can you explain what this function does?"
+    should_fire: false
+    reason: "Explanatory request - no skill typically needed"
+
+  - input: "Quick question about the codebase"
+    should_fire: false
+    reason: "Question not yet converted to task"
+
+  - input: "Build me a user login feature with OAuth"
+    should_fire: true
+    reason: "Clear actionable task request"
+
+  - input: "Refactor this module to use the adapter pattern"
+    should_fire: true
+    reason: "Task that likely needs refactoring skill"
+
+# Priority tests - process skills should come first
+priority_tests:
+  - input: "Let's build a new feature"
+    expected_priority: "process" # brainstorming should be considered first
+    reason: "Process skills determine HOW to approach"
+
+  - input: "Fix this critical production bug"
+    expected_priority: "process" # debugging should be considered first
+    reason: "Debugging determines approach before domain skills"
