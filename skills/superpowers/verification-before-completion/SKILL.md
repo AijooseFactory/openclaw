@@ -1,17 +1,237 @@
 ---
 name: verification-before-completion
 description: Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before making any success claims; evidence before assertions always. Include verification time in estimates.
+version: 1.1.0
+skill_schema_version: 1
+deprecated: false
+replaced_by: null
+minimum_openclaw_version: "1.0.0"
+supported_models:
+  - general
+preferred_model_traits:
+  - strong verification
+  - quality assurance
+required_tools: []
+optional_tools:
+  - exec
+  - read
+risk_level: low
 ---
 
 # Verification Before Completion
 
-## Overview
+## Purpose
 
-Claiming work is complete without verification is dishonesty, not efficiency.
+Verifies that claimed work is actually complete before any completion assertions are made. Ensures evidence exists before claims, preventing false completion reports that waste time and erode trust.
 
 **Core principle:** Evidence before claims, always.
 
 **Violating the letter of this rule is violating the spirit of this rule.**
+
+## Trigger Contract
+
+### Use this skill when
+- About to claim work is "complete", "fixed", "done", "working", or "passing"
+- About to create a commit, push, or pull request
+- About to express satisfaction ("Great!", "Perfect!", "Done!")
+- About to move to the next task
+- About to delegate to an agent and report success
+- Any positive statement about work state is about to be made
+- User asks to verify something is working
+
+### Do NOT use this skill when
+- Simply reading or exploring code without making claims
+- Writing initial code/tasks without completion claims
+- Asking for help or clarification (not making completion claims)
+- The task is ONLY to generate output (not verify it)
+
+### Inspect First
+- What exact command proves the claim being made?
+- What is the current state of the codebase?
+- What verification has already been run?
+
+### Handoff To
+- `superpowers:test-driven-development` for TDD workflow verification
+- Relevant domain skills for specific verification needs
+
+### Stop Conditions
+- Verification command unavailable or cannot be run
+- Claim cannot be verified (e.g., external system state)
+- Verification would require significant additional work not in scope
+
+## When Not to Use
+
+### Common Misactivation Scenarios
+
+**Don't use for:**
+- Initial exploration without completion claims
+- Asking clarifying questions
+- Reporting current state without asserting completion
+- Generating content without verification claims
+
+### What is NOT a Verification Claim
+
+These statements do NOT require verification:
+- "I'm working on X"
+- "I've started Y"
+- "I'm trying Z"
+- "Here's what I found:"
+- Questions or requests for help
+
+## Inputs
+
+### Required Inputs
+- The claim being made (what is being asserted as complete/correct)
+- The verification command that proves the claim
+- Access to run verification commands
+
+### Optional Inputs
+- Context about the task (what was supposed to be accomplished)
+- Previous verification history (for comparison)
+- Time constraints (if any)
+
+### Input Formats
+- Natural language claim
+- Explicit verification command
+- Test output, build output, or other evidence
+
+## Output Contract
+
+### Output Mode
+- Verification report with evidence
+- Claim confirmation or correction
+
+### Required Outputs
+- Claim being verified
+- Verification command executed
+- Evidence (command output, exit code)
+- Verdict: confirmed or contradicted
+
+### Output Guarantees
+
+| Guarantee | Description |
+|-----------|-------------|
+| Evidence-based | Every claim verified with actual command output |
+| Complete output | Full output shown, not just summary |
+| Exit code reported | Success/failure based on actual exit code |
+| Honest verdict | Contradicts false claims with evidence |
+
+### Validation Rules
+- Must run actual verification command (not assume)
+- Must show actual output (not just summarize)
+- Must report actual exit code
+- Must not skip steps "just this once"
+
+### Failure Output
+Return blocked status with:
+- reason: "verification_required"
+- claim: what was claimed without evidence
+- needed: what verification command proves the claim
+- guidance: "Run verification command before making claim"
+
+## Risk and Safety Boundaries
+
+**Risk Level:** low
+
+This skill promotes honesty and thoroughness. It does not execute destructive commands - it only runs verification commands that read state.
+
+### Trust Boundaries
+
+| Boundary | Trust Level | Notes |
+|----------|-------------|-------|
+| Verification commands | Medium | Only run read-only/verification commands |
+| Command output | Trusted | Actual output is source of truth |
+| Agent reports | Untrusted | Always verify independently |
+
+### Primary Risks
+
+| Risk | Mitigation |
+|------|------------|
+| Verification command harm | Only run verification commands, not mutations |
+| Incomplete verification | Require full output, not summary |
+| False verification | Report actual exit codes |
+| Missed verification | Check all claims for verification need |
+
+### Basic Safety Rules
+1. Only verify, do not modify state
+2. Show full output, not cherry-picked lines
+3. Report exit codes accurately
+4. Never skip verification "just this once"
+
+## Failure Taxonomy
+
+| Class | Description | Resolution |
+|-------|-------------|------------|
+| verification_command_missing | No verification command available | Request clarification on what proves the claim |
+| verification_failed | Output contradicts claim | Correct the claim with evidence |
+| verification_skipped | Claim made without verification | Run verification, update claim |
+| partial_verification | Only checked subset | Verify completely before claiming |
+| exit_code_misreported | Claimed success from exit code 1 | Report actual exit code |
+
+### Expected Failure Behavior
+- If verification not run: Request run verification before claim
+- If verification fails: Contradict claim with evidence
+- If partial: Require complete verification
+
+### Minimum Failure Handling
+- **verification_skipped**: "Run [command] before making that claim"
+- **verification_failed**: "Output shows [evidence]. The claim is inaccurate."
+- **partial_verification**: "Verify completely: run full command and check all output"
+
+## Minimal Context Rules
+
+### Core Required Context
+
+| Information | Source | Required |
+|-------------|--------|----------|
+| Claim being made | User message | Yes |
+| Verification command | Skill instructions | Yes |
+| Command output | Execution result | Yes |
+| Exit code | Command result | Yes |
+
+### Context Principle
+
+Verification requires minimal context:
+- What claim → What command → What output → What verdict
+
+No need for:
+- Full project context for basic verification
+- Historical verification records
+- Complex state management
+
+## Minimum Observability
+
+### Required Logging
+
+| Event | Description |
+|-------|-------------|
+| **Trigger** | When verification skill activates (claim about to be made) |
+| **Action** | Verification command run, output received |
+| **Verdict** | Claim confirmed or contradicted with evidence |
+
+### Logging Format
+Simple text logs are sufficient:
+```
+[verification-before-completion] Triggered: claim="tests pass"
+[verification-before-completion] Action: ran `npm test`, exit=0
+[verification-before-completion] Verdict: CONFIRMED - 34/34 tests pass
+```
+
+## Version Metadata
+
+| Field | Value |
+|-------|-------|
+| version | 1.1.0 |
+| deprecated | false |
+| replaced_by | null |
+
+### Versioning
+- 1.0.0: Initial version
+- 1.1.0: Added v2.4.0 required sections
+
+---
+
+# Original Content (Preserved)
 
 ## The Iron Law
 

@@ -1,0 +1,44 @@
+# Scoring Thresholds for writing-plans skill evaluation
+
+thresholds:
+  trigger_accuracy:
+    pass: 100
+    fail: < 100
+    description: "100% of trigger tests must pass"
+    
+  output_validity:
+    pass: 100
+    fail: < 100
+    description: "All output structure tests must pass"
+    
+  task_completeness:
+    pass: 100
+    fail: < 100
+    description: "All required task fields present"
+    
+  timeline_accuracy:
+    pass: 100
+    fail: < 100
+    description: "All time estimates in AI hours format"
+    
+  code_completeness:
+    pass: 100
+    fail: < 100
+    description: "All code examples complete and runnable"
+    
+  file_path_accuracy:
+    pass: 100
+    fail: < 100
+    description: "All file paths exact and valid"
+
+# Binary pass/fail criteria
+binary_criteria:
+  - "All trigger tests must correctly fire"
+  - "All trigger tests must correctly NOT fire on negative cases"
+  - "Output must include required header structure"
+  - "Output must include task structure with TDD steps"
+  - "Timeline must use AI hours (not human weeks)"
+  - "All file paths must be exact (no placeholders)"
+  - "All code examples must be complete"
+  - "Plan review loop must be documented"
+  - "Execution handoff must mention both options"

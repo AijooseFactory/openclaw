@@ -1,0 +1,56 @@
+# Output Contract Tests for writing-plans skill
+
+output_tests:
+  - name: valid_markdown_structure
+    check: |
+      Output is valid markdown with:
+      - Header with feature name
+      - Goal description
+      - Architecture section
+      - Tech Stack section
+    
+  - name: required_header_fields
+    check: |
+      Plan includes all required header fields:
+      - Feature name in title
+      - Goal (one sentence)
+      - Architecture (2-3 sentences)
+      - Tech Stack
+      
+  - name: task_structure
+    check: |
+      Each task has:
+      - Task number and name
+      - Files section (Create/Modify/Test)
+      - Steps with checkboxes
+      - Code examples
+      - Commands with expected output
+      
+  - name: tdd_approach
+    check: |
+      Tasks follow test-driven development:
+      - Step 1: Write failing test
+      - Step 2: Run test (expect failure)
+      - Step 3: Write minimal implementation
+      - Step 4: Run test (expect pass)
+      - Step 5: Commit
+      
+  - name: timeline_format
+    check: |
+      Timeline section includes:
+      - AI estimates in hours
+      - Milestone table
+      - Total estimate
+      
+  - name: file_paths
+    check: |
+      All file references use exact paths:
+      - No placeholder paths
+      - Correct file extensions
+      
+  - name: complete_code
+    check: |
+      Code examples are complete:
+      - Import statements included
+      - Function definitions complete
+      - Not abbreviated or partial

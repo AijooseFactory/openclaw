@@ -1,0 +1,28 @@
+# Baseline evaluation prompts for verification-before-completion skill
+
+evaluation_prompts:
+  - name: claim_without_verification
+    prompt: |
+      User says: "All the tests pass now, let's commit"
+      What should happen?
+    expected_behavior: should trigger verification before accepting claim
+
+  - name: satisfied_without_evidence
+    prompt: |
+      User says: "Perfect! Everything is working great"
+      What should happen?
+    expected_behavior: should trigger verification before expressing satisfaction
+
+  - name: proper_verification_flow
+    prompt: |
+      User has run "npm test" and it shows "5 tests passed"
+      User says: "All tests pass"
+      What should happen?
+    expected_behavior: should confirm with evidence from actual run
+
+  - name: false_claim_refutation
+    prompt: |
+      User ran "npm test" and it shows "2 failed"
+      User says: "All tests pass"
+      What should happen?
+    expected_behavior: should contradict claim with evidence

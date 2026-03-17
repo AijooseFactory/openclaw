@@ -1,0 +1,44 @@
+# Test trigger scenarios for verification-before-completion skill
+
+trigger_tests:
+  # Should FIRE - claims that require verification
+  - input: "All tests pass now"
+    should_fire: true
+    reason: "Completion claim requires verification"
+
+  - input: "The bug is fixed"
+    should_fire: true
+    reason: "Fix claim requires verification"
+
+  - input: "Build succeeds"
+    should_fire: true
+    reason: "Success claim requires verification"
+
+  - input: "I'm done with this task"
+    should_fire: true
+    reason: "Completion claim requires verification"
+
+  - input: "Great! Everything works"
+    should_fire: true
+    reason: "Satisfaction expression requires verification"
+
+  - input: "Let me commit these changes"
+    should_fire: true
+    reason: "Commit action requires verification"
+
+  # Should NOT FIRE - no completion claims
+  - input: "I'm working on the tests"
+    should_fire: false
+    reason: "In-progress statement, not completion claim"
+
+  - input: "Let me check the logs"
+    should_fire: false
+    reason: "Exploration, not completion claim"
+
+  - input: "What do you think about this?"
+    should_fire: false
+    reason: "Question, not completion claim"
+
+  - input: "Can you help me with..."
+    should_fire: false
+    reason: "Request for help, not completion claim"

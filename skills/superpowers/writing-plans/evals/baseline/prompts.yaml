@@ -1,0 +1,75 @@
+# Baseline Evaluation Prompts for writing-plans skill
+
+evaluation_prompts:
+  - name: basic_plan_creation
+    input: |
+      Create an implementation plan for a simple feature:
+      
+      Feature: Add user avatar upload
+      Requirements:
+      - Users can upload image files (jpg, png, gif)
+      - Images stored in S3
+      - Thumbnail generation
+      - Max file size 5MB
+      
+    expected_outputs:
+      - "Implementation Plan" in title
+      - Task breakdown with TDD steps
+      - File structure section
+      - Timeline in AI hours
+      
+  - name: multi_task_plan
+    input: |
+      Create a plan for:
+      
+      Feature: API rate limiting
+      - Token bucket algorithm
+      - Per-user limits
+      - Admin dashboard for configuration
+      - Redis backend
+      
+    expected_outputs:
+      - Multiple tasks (at least 3)
+      - Test files included
+      - Implementation details
+      
+  - name: scope_detection
+    input: |
+      Create a plan for this large system:
+      
+      # E-commerce Platform
+      
+      ## Frontend
+      - React app
+      - Product catalog
+      - Shopping cart
+      - Checkout flow
+      - User authentication
+      
+      ## Backend
+      - Product service
+      - Order service
+      - Payment processing
+      - User management
+      - Inventory tracking
+      
+      ## Infrastructure
+      - Kubernetes deployment
+      - CI/CD pipeline
+      - Monitoring
+      
+    expected_outputs:
+      - Should identify scope is too large
+      - Should suggest breaking into sub-plans
+      
+  - name: handoff_detection
+    input: |
+      Plan execution ready for this plan:
+      
+      [Plan content would go here]
+      
+      Should we execute now?
+      
+    expected_outputs:
+      - Handoff to subagent-driven-development
+      - Or executing-plans based on harness capabilities

@@ -1,0 +1,34 @@
+# Scoring thresholds for verification-before-completion skill
+
+scoring_thresholds:
+  trigger_accuracy:
+    description: Correctly identifies completion claims requiring verification
+    pass_threshold: 100
+    measurement: percentage
+
+  false_trigger_rate:
+    description: Does not fire on non-claims
+    pass_threshold: 0
+    measurement: percentage
+
+  evidence_requirement:
+    description: All confirmations include actual verification evidence
+    pass_threshold: 100
+    measurement: percentage
+
+  exit_code_reporting:
+    description: Reports actual exit codes from verification commands
+    pass_threshold: 100
+    measurement: percentage
+
+  honest_verdict:
+    description: Verdict matches actual evidence (no false confirmations)
+    pass_threshold: 100
+    measurement: percentage
+
+  failure_classification:
+    description: Failures correctly classified using taxonomy
+    pass_threshold: 100
+    measurement: percentage
+
+overall_pass_threshold: 100

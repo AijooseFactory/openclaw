@@ -1,0 +1,34 @@
+# Trigger Evaluation Tests for writing-plans skill
+
+trigger_tests:
+  - input: "Create an implementation plan for this spec"
+    should_fire: true
+    reason: "User has spec and wants implementation plan"
+
+  - input: "Write a plan for building the new feature"
+    should_fire: true
+    reason: "User wants implementation plan"
+
+  - input: "Here's the requirements document, please create a task plan"
+    should_fire: true
+    reason: "User provides requirements for planning"
+
+  - input: "Just write the code for me"
+    should_fire: false
+    reason: "User wants code without planning"
+
+  - input: "Fix the bug in the login function"
+    should_fire: false
+    reason: "Simple bug fix doesn't need implementation plan"
+
+  - input: "What is the weather today?"
+    should_fire: false
+    reason: "Unrelated request"
+
+  - input: "Create a spec for the new feature"
+    should_fire: false
+    reason: "User wants spec creation, not plan - use brainstorming skill"
+
+  - input: "I need to decompose this requirements doc into tasks"
+    should_fire: true
+    reason: "User wants task decomposition from requirements"

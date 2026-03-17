@@ -1,0 +1,22 @@
+# Test output validation for verification-before-completion skill
+
+output_tests:
+  - name: verification_report_structure
+    check: output contains claim, verification command, evidence, verdict
+    required_fields:
+      - claim
+      - verification_command
+      - evidence
+      - verdict
+
+  - name: exit_code_reported
+    check: output reports actual exit code from verification command
+
+  - name: full_output_shown
+    check: output shows actual command output, not just summary
+
+  - name: honest_verdict
+    check: verdict matches evidence (confirms when exit 0, contradicts otherwise)
+
+  - name: no_false_confirmation
+    check: does not confirm claims when verification not run
