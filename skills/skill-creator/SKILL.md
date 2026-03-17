@@ -1,7 +1,7 @@
 ---
 name: skill-creator
 description: Create, audit, harden, evaluate, and govern OpenClaw AgentSkills. Produces canonical skills that are tool-safe, eval-backed, MCP-ready, context-efficient, and lifecycle-managed. Use when creating a new skill from scratch or when asked to improve, review, audit, tidy up, or clean up an existing skill or SKILL.md file. Triggers on phrases like "create a skill", "author a skill", "improve this skill", "audit the skill".
-version: 2.3.0
+version: 2.4.0
 skill_schema_version: 1
 deprecated: false
 replaced_by: null
@@ -838,6 +838,8 @@ Always maintain deprecated skills for at least one major version cycle.
 
 **This section is Advanced.** Define how skills can be improved iteratively through baseline vs. challenger evaluation.
 
+**Integration:** Use with `superpowers:self-improvement-loop` for session-based improvement. That skill handles the end-of-session wrap-up that captures learnings, extracts patterns, and evolves configuration over time.
+
 ### Baseline vs. Challenger Workflow
 
 Skills improve through a structured evaluation loop:
@@ -857,6 +859,25 @@ Skills improve through a structured evaluation loop:
 │  5. DECIDE: Promote challenger / Keep baseline / Iterate    │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+### Session-Based Improvement (Triage Pattern)
+
+When capturing improvement findings, use the triage pattern — every finding must be triaged, never just listed:
+
+| Decision | Action |
+|----------|--------|
+| **Apply now** | Implement the change immediately |
+| **Capture** | Write to learnings with date, context, and rationale |
+| **Dismiss** | Say why explicitly, document rejection reason |
+
+**Apply/Capture/Dismiss is mandatory.** Findings that are "noted" without action are lost.
+
+### Cascade Checking
+
+After applying an improvement, check if it applies to related content:
+1. Search for similar patterns in other skills
+2. Apply consistently across all relevant files
+3. Document why not if intentionally different
 
 ### Generating Candidate Improvements
 
