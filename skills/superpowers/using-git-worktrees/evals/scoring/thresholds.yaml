@@ -1,0 +1,60 @@
+# Scoring Thresholds for using-git-worktrees evaluation
+
+# Binary pass/fail thresholds
+thresholds:
+  trigger_accuracy:
+    pass: 100
+    fail: 0
+    description: "All trigger tests must classify correctly"
+
+  output_validity:
+    pass: 100
+    fail: 0
+    description: "All output fields must be present and valid"
+
+  safety_compliance:
+    pass: 100
+    fail: 0
+    description: "All safety checks must pass"
+
+  test_passing_rate:
+    pass: 100
+    fail: 0
+    description: "Baseline tests must pass or be reported"
+
+# Pass/fail determination
+scoring:
+  require_all_pass: true
+  binary_only: true
+
+# Evaluation criteria
+criteria:
+  - name: trigger_fires_on_valid
+    type: correctness
+    pass_condition: "Skill fires on valid worktree creation requests"
+    weight: critical
+
+  - name: trigger_blocks_invalid
+    type: correctness
+    pass_condition: "Skill does NOT fire on branch switch or temp dir requests"
+    weight: critical
+
+  - name: output_has_path
+    type: correctness
+    pass_condition: "Output includes absolute worktree path"
+    weight: critical
+
+  - name: output_has_test_results
+    type: correctness
+    pass_condition: "Output includes test results"
+    weight: critical
+
+  - name: directory_ignored
+    type: safety
+    pass_condition: "Project-local directory verified gitignored"
+    weight: critical
+
+  - name: failure_classification
+    type: correctness
+    pass_condition: "Failures use standard taxonomy"
+    weight: important

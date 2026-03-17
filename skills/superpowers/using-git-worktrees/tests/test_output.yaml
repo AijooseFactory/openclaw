@@ -1,0 +1,29 @@
+# Output Tests for using-git-worktrees skill
+
+output_tests:
+  - name: worktree_created
+    check: Worktree directory exists at specified path
+
+  - name: branch_created
+    check: New branch exists in git
+
+  - name: directory_ignored
+    check: Project-local directory is in .gitignore
+
+  - name: setup_completed
+    check: Project setup commands ran (npm install, cargo build, etc.)
+
+  - name: tests_passed
+    check: Baseline tests pass or failures reported
+
+  - name: proper_reporting
+    check: Output includes worktree path, test results, and ready status
+
+# Validation rules
+validation:
+  worktree_path_format: "^/.+/\\.worktrees/.+$|^~/.config/superpowers/worktrees/.+$"
+  branch_name_format: "^[a-zA-Z0-9._/-]+$"
+  required_output_fields:
+    - worktree_path
+    - test_results
+    - ready_message

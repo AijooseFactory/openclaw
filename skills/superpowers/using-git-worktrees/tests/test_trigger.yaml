@@ -1,0 +1,28 @@
+# Trigger Tests for using-git-worktrees skill
+
+trigger_tests:
+  # Should fire - valid worktree creation requests
+  - input: "Create a worktree for feature auth"
+    should_fire: true
+  - input: "I need an isolated workspace for my new branch"
+    should_fire: true
+  - input: "Set up a worktree to work on feature xyz"
+    should_fire: true
+  - input: "Using git worktrees to start feature work"
+    should_fire: true
+  - input: "Start implementation in isolated worktree"
+    should_fire: true
+
+  # Should NOT fire - branch switching or other git operations
+  - input: "Switch to another branch"
+    should_fire: false
+  - input: "Just checkout main branch"
+    should_fire: false
+  - input: "Create a temp directory for testing"
+    should_fire: false
+  - input: "Stash my changes"
+    should_fire: false
+
+  # Edge cases - ambiguous
+  - input: "worktree"  # Bare word - might be triggering
+    should_fire: false

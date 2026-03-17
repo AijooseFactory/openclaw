@@ -1,0 +1,52 @@
+# Baseline Evaluation Prompts for using-git-worktrees
+
+evaluation_prompts:
+  trigger_tests:
+    - name: valid_worktree_request
+      prompt: "Create a worktree for feature authentication"
+      expected_behavior: fires
+      description: "User requests isolated workspace for feature work"
+
+    - name: branch_isolation_request
+      prompt: "I need to work on a new branch in isolation"
+      expected_behavior: fires
+      description: "User wants branch isolation for new work"
+
+    - name: implementation_plan_start
+      prompt: "Set up worktree before executing implementation plan"
+      expected_behavior: fires
+      description: "Pre-implementation workspace setup"
+
+    - name: simple_branch_switch
+      prompt: "Switch to the main branch"
+      expected_behavior: does_not_fire
+      description: "Simple branch switch, not worktree needed"
+
+    - name: temp_directory
+      prompt: "Create a temporary directory"
+      expected_behavior: does_not_fire
+      description: "Temp directory request, not worktree"
+
+  output_tests:
+    - name: output_includes_path
+      check: Output contains worktree absolute path
+    - name: output_includes_test_results
+      check: Output includes test results summary
+    - name: output_includes_ready_status
+      check: Output confirms ready state for implementation
+
+  safety_tests:
+    - name: ignores_unless_verified
+      check: Project-local directories verified ignored before creation
+    - name: reports_test_failures
+      check: Test failures are reported, not hidden
+
+# Expected outputs
+expected_outputs:
+  success:
+    - "Worktree ready at"
+    - "Tests passing"
+    - "Ready to implement"
+  failure:
+    - reason classification
+    - safe next step
