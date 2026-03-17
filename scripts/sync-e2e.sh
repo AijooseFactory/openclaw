@@ -4,7 +4,7 @@
 
 set -e
 
-OC_SOURCE="/Users/george/Mac/data/openclaw"
+OC_SOURCE="/Users/george/Mac/data/usr/projects/ai_joose_factory/.a0proj/_projects/internal/openclaw"
 AJF_WORKSPACE="/Users/george/Mac/data/usr/projects/ai_joose_factory"
 
 echo "🔄 [1/4] Syncing OpenClaw Source Code..."
