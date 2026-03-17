@@ -875,6 +875,10 @@ Time format in system prompt. Default: `auto` (OS preference).
         primary: "openrouter/qwen/qwen-2.5-vl-72b-instruct:free",
         fallbacks: ["openrouter/google/gemini-2.0-flash-vision:free"],
       },
+      imageGenerationModel: {
+        primary: "openai/gpt-image-1",
+        fallbacks: ["google/gemini-3.1-flash-image-preview"],
+      },
       pdfModel: {
         primary: "anthropic/claude-opus-4-6",
         fallbacks: ["openai/gpt-5-mini"],
@@ -899,6 +903,8 @@ Time format in system prompt. Default: `auto` (OS preference).
 - `imageModel`: accepts either a string (`"provider/model"`) or an object (`{ primary, fallbacks }`).
   - Used by the `image` tool path as its vision-model config.
   - Also used as fallback routing when the selected/default model cannot accept image input.
+- `imageGenerationModel`: accepts either a string (`"provider/model"`) or an object (`{ primary, fallbacks }`).
+  - Used by the shared image-generation capability and any future tool/plugin surface that generates images.
 - `pdfModel`: accepts either a string (`"provider/model"`) or an object (`{ primary, fallbacks }`).
   - Used by the `pdf` tool for model routing.
   - If omitted, the PDF tool falls back to `imageModel`, then to best-effort provider defaults.
@@ -2442,13 +2448,19 @@ See [Plugins](/tools/plugin).
     profiles: {
       openclaw: { cdpPort: 18800, color: "#FF4500" },
       work: { cdpPort: 18801, color: "#0066CC" },
+      user: { driver: "existing-session", attachOnly: true, color: "#00AA00" },
+      brave: {
+        driver: "existing-session",
+        attachOnly: true,
+        userDataDir: "~/Library/Application Support/BraveSoftware/Brave-Browser",
+        color: "#FB542B",
+      },
       remote: { cdpUrl: "http://10.0.0.42:9222", color: "#00AA00" },
     },
     color: "#FF4500",
     // headless: false,
     // noSandbox: false,
     // extraArgs: [],
-    // relayBindHost: "0.0.0.0", // only when the extension relay must be reachable across namespaces (for example WSL2)
     // executablePath: "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
     // attachOnly: false,
   },
@@ -2462,11 +2474,13 @@ See [Plugins](/tools/plugin).
 - `ssrfPolicy.allowPrivateNetwork` remains supported as a legacy alias.
 - In strict mode, use `ssrfPolicy.hostnameAllowlist` and `ssrfPolicy.allowedHostnames` for explicit exceptions.
 - Remote profiles are attach-only (start/stop/reset disabled).
+- `existing-session` profiles are host-only and use Chrome MCP instead of CDP.
+- `existing-session` profiles can set `userDataDir` to target a specific
+  Chromium-based browser profile such as Brave or Edge.
 - Auto-detect order: default browser if Chromium-based → Chrome → Brave → Edge → Chromium → Chrome Canary.
 - Control service: loopback only (port derived from `gateway.port`, default `18791`).
 - `extraArgs` appends extra launch flags to local Chromium startup (for example
   `--disable-gpu`, window sizing, or debug flags).
-- `relayBindHost` changes where the Chrome extension relay listens. Leave unset for loopback-only access; set an explicit non-loopback bind address such as `0.0.0.0` only when the relay must cross a namespace boundary (for example WSL2) and the host network is already trusted.
 
 ---
 
@@ -2942,7 +2956,7 @@ Notes:
 
 ## Wizard
 
-Metadata written by CLI wizards (`onboard`, `configure`, `doctor`):
+Metadata written by CLI guided setup flows (`onboard`, `configure`, `doctor`):
 
 ```json5
 {
