@@ -221,7 +221,7 @@ This minimum observability section is separate from advanced topics like metrics
 ## Version Metadata
 
 ### Current Version
-- **version:** 1.1.0
+- **version:** 1.2.0
 - **skill_schema_version:** 1
 - **deprecated:** false
 

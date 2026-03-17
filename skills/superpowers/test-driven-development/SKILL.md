@@ -217,7 +217,7 @@ This minimum observability section is separate from advanced topics like metrics
 
 | Field | Value | Purpose |
 |-------|-------|---------|
-| version | 1.1.0 | Current skill version |
+| version | 1.2.0 | Current skill version |
 | skill_schema_version | 1 | Schema identifier |
 | deprecated | false | Active skill |
 | replaced_by | null | No replacement |
