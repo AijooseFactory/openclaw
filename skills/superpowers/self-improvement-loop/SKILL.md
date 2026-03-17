@@ -1,19 +1,21 @@
 ---
 name: self-improvement-loop
-description: Use at session end (user says "wrap up", "close session", "end session", "wrap things up") or when user explicitly asks for learning capture. Runs end-of-session checklist for shipping, memory, and self-improvement. Creates, audits, and evolves skills over time — gets smarter with each session.
+description: Use at session end (user says "wrap up", "close session", "end session", "wrap things up") or when user explicitly asks for learning capture. Runs end-of-session checklist for shipping, memory, and self-improvement. Creates, audits, and evolves agent configuration over time — gets smarter with each session.
+version: 1.0.0
+risk_level: low
 ---
 
-# Self-Improvement Loop
+# Self-Improvement Loop (OpenClaw)
 
 Every session is an opportunity to improve. This skill runs a systematic end-of-session process that captures learnings, extracts patterns, and evolves configuration — making the system smarter over time.
 
 ## The Core Principle
 
 ```
-Sessions end. Memory doesn't persist. Files do.
+Sessions end. Context compacts. Files persist.
 ```
 
-What you don't capture is lost. What you don't extract stays noise. What you don't apply never compounds.
+What you don't capture is lost to compaction. What you don't extract stays noise. What you don't apply never compounds.
 
 ## When to Use
 
@@ -51,24 +53,34 @@ What you don't capture is lost. What you don't extract stays noise. What you don
 
 ### Phase 2: Remember It
 
-Review session for learnings. Decide where each belongs:
+Review session for learnings. Decide where each belongs in OpenClaw's memory hierarchy:
 
-**Memory Hierarchy:**
+**OpenClaw Memory Hierarchy:**
 
 | Location | Purpose | Example |
 |----------|---------|---------|
-| `MEMORY.md` | Project-level facts, milestones, decisions | Architecture decisions, team structure |
-| `.claude/rules/` | Modular project rules (scoped by file pattern) | Testing rules for `tests/**` |
-| `CLAUDE.md` | Permanent project conventions | Build commands, code style |
-| Auto memory | Patterns discovered, project quirks | "This API always returns 429 on first try" |
-| `CLAUDE.local.md` | Private per-project notes | Local URLs, sandbox credentials |
+| `MEMORY.md` | Project-level facts, milestones, decisions | Architecture decisions, team structure, infrastructure facts |
+| `memory/*.md` | Session-specific detailed notes | Day-by-day activity logs, detailed decisions |
+| `IDENTITY.md` | Agent persona, role, capabilities | Who the agent is, mission, capabilities |
+| `SOUL.md` | Agent philosophy, values, temperament | Core drive, principles, communication style |
+| `USER.md` | User preferences, context | CEO name, preferences, infrastructure |
+| `AGENTS.md` | Team structure, skill assignments | Agent roles, skill-to-role mapping |
+| `TOOLS.md` | Tool usage guidance | Best practices for available tools |
+| `HEARTBEAT.md` | Routine planning tasks | Morning sync, periodic checks |
+| `/app/skills/` | Modular capabilities | Domain-specific skills, superpowers |
 
 **Decision Framework:**
-- Permanent project convention? → `CLAUDE.md` or `.claude/rules/`
-- Scoped to specific file types? → `.claude/rules/` with `paths:` frontmatter
-- Pattern/discovery worth remembering? → Auto memory ("remember that...")
-- Personal/ephemeral context? → `CLAUDE.local.md`
-- Duplicating another file? → Use `@import` instead
+- Permanent project convention? → `MEMORY.md` or new skill in `/app/skills/`
+- Scoped to specific file types? → New skill with `description` specifying scope
+- Pattern/discovery worth remembering? → `memory/YYYY-MM-DD.md` with detailed context
+- Agent persona update? → `IDENTITY.md` or `SOUL.md`
+- User preference update? → `USER.md`
+- Team structure change? → `AGENTS.md`
+
+**LCM (Lossless Context Management):**
+- OpenClaw uses LCM to compact conversation history into summaries
+- Summary DAG preserves critical information across compaction
+- Use `lcm_expand` to retrieve compacted details when needed
 
 ### Phase 3: Review & Apply (Self-Improvement)
 
@@ -78,7 +90,7 @@ Analyze conversation for self-improvement findings. If session was short/routine
 
 Every finding must be triaged — never just listed:
 - **Apply now** → Make the change immediately
-- **Capture** → Write to learnings with date and context
+- **Capture** → Write to `memory/YYYY-MM-DD.md` with date and context
 - **Dismiss** → Say why, move on (don't silently drop)
 
 **Finding Categories:**
@@ -94,10 +106,10 @@ Every finding must be triaged — never just listed:
 
 | Finding | Action |
 |---------|--------|
-| Skill gap | Create/update skill or add to `CLAUDE.md` |
-| Friction | Create new skill or automation |
-| Knowledge | Save to appropriate memory location |
-| Automation | Document skill/hook spec for implementation |
+| Skill gap | Invoke `skill-creator` to create/update skill, or update `AGENTS.md` |
+| Friction | Create new skill using `writing-skills` workflow |
+| Knowledge | Save to appropriate memory location (`MEMORY.md`, `memory/`, `USER.md`) |
+| Automation | Document skill spec using `skill-creator` |
 
 **Cascade Checking:**
 After applying an improvement, check: does this apply to related content?
@@ -126,7 +138,7 @@ Review full conversation for publishable material:
 
 **If publishable material exists:**
 - Draft article for appropriate platform
-- Save to drafts folder
+- Save to drafts folder (`docs/drafts/` or similar)
 - Present suggestions with draft location
 - Wait for user approval
 
@@ -135,9 +147,9 @@ Say "Nothing worth publishing from this session" and conclude.
 
 ## State Files (Multi-Session Continuity)
 
-For work spanning sessions, maintain a state file:
+For work spanning sessions, maintain a state file in OpenClaw's memory system:
 
-**Location:** `.claude/state/<workstream>.md`
+**Location:** `memory/active/<workstream>.md`
 
 **Format:**
 ```markdown
@@ -151,6 +163,7 @@ Next: [singular, concrete next action]
 Open questions:
 - [question 1]
 - [question 2]
+Last updated: [ISO timestamp]
 ```
 
 **Rules:**
@@ -161,20 +174,19 @@ Open questions:
 
 ## Evolution Mechanics
 
-**Promotion (Learnings → Rules):**
-When a learning changes behavior 2+ times → extract to `.claude/rules/`
+**Promotion (Learnings → Skills):**
+When a learning changes behavior 2+ times → create or update a skill in `/app/skills/`
 
-**Consolidation (Learnings Archive):**
-When `learnings.md` exceeds ~30 entries:
-1. Group by theme — what categories emerge?
-2. Promote repeated patterns to `rules/`
-3. Archive integrated entries to `learnings-archive.md`
-4. Ask user: "Themes emerging: [X, Y, Z]. Need structure?"
+**Consolidation (Memory Archive):**
+When `memory/YYYY-MM-DD.md` files accumulate:
+1. Extract themes to `MEMORY.md` (permanent facts)
+2. Archive older session files to `memory/archive/YYYY-MM/`
+3. Keep active sessions in root `memory/` directory
 
 **Structural Emergence:**
-When a rule exceeds ~50 lines, ask user to split:
-- Option A: Short rule + process doc
-- Option B: Rule + requirements spec
+When a skill exceeds ~50 lines, ask user to split:
+- Option A: Short skill + reference document in `references/`
+- Option B: Primary skill + supporting skill
 
 ## Anti-Patterns (Guardrails)
 
@@ -182,19 +194,22 @@ When a rule exceeds ~50 lines, ask user to split:
 **Do:** Create when needed
 
 **Don't:** End session without state update
-**Do:** Always update for ongoing work
+**Do:** Always update `memory/active/` for ongoing work
 
 **Don't:** List findings without triage
 **Do:** Every finding: apply/capture/dismiss
 
-**Don't:** Mix user content into `.claude/`
-**Do:** `.claude/` = self-improvement only
+**Don't:** Mix temporary notes into `MEMORY.md`
+**Do:** `MEMORY.md` = permanent facts only
 
 **Don't:** Guess at stale state
 **Do:** Ask user to clarify
 
 **Don't:** Evolve silently
 **Do:** Ask user before structural changes
+
+**Don't:** Forget LCM compaction
+**Do:** Important details go to files, not just conversation
 
 ## Integration with Other Skills
 
@@ -204,6 +219,17 @@ When a rule exceeds ~50 lines, ask user to split:
 | `writing-skills` | TDD approach for new skills identified during review |
 | `verification-before-completion` | Validate learnings before capturing |
 | `ai-timeline-estimation` | Estimate time for automation implementations |
+| `lcm_expand` | Retrieve compacted details from conversation history |
+
+## Integration with OpenClaw Agents
+
+| Agent Role | Primary Use |
+|------------|-------------|
+| Albert (TPM) | Coordination patterns, dispatch improvements |
+| Einstein (Engineer) | Technical patterns, code quality findings |
+| Blackwell (QA) | Test patterns, quality findings |
+| Babatunde (Security) | Security patterns, compliance findings |
+| Zeke (DevOps) | Infrastructure patterns, deployment findings |
 
 ## Timeline Estimation
 
